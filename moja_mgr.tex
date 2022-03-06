@@ -404,6 +404,106 @@ nr albumu: 89892
 
 \chapter{Przegląd autoenkoderów}
 
+\section{Sztuczne sieci neuronowe}
+
+\textbf{Sztuczny neuron} ma co najmniej jedno binarne wejście i dokładnie jedno binarne wyjście. Wyjście jest uaktywniane, jeżeli jest aktywna określona liczba wejść. Na rysunku \ref{fig:neurony1} przedstawione są przykładowe sztuczne sieci neuronowe (SSN lub z angielskiego ANN) wykonujące różne operacje logiczne, przy założeniu, że neuron uaktywni się, gdy przynajmniej dwa wejścia będą aktywne \cite{geron}.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=9cm]{rys/neurony1.png}
+	\caption{Przykładowe sztuczne sieci neuronowe rozwiązujące proste zadania logiczne}
+	\zrodlo{\cite{geron}}
+	\label{fig:neurony1}
+\end{figure}
+
+Jedną z najprostszych architektur SSN jest \textbf{perceptron}, którego podstawą jest sztuczny neuron zwany \textbf{progową jednostką logiczną} (ang. \textit{Threshold Logic Unit} - TLU) lub \textbf{liniową jednostką progową} (ang. \textit{Linear Threshold Unit} - LTU). Wartościami wejść i wyjść są liczby, a każde połączenie ma przyporządkowaną wagę. Jednostka TLU oblicza ważoną sumę sygnałów wejściowych, a następnie zostaje użyta funkcja skokowa. Schemat takiej jednostki został przedstawiony na rysunku \ref{fig:neurony2}.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=8cm]{rys/neurony2.png}
+	\caption{Struktura sztucznego neuronu, który stosuje funkcję skokową $f$ na ważonej sumie sygnałów wejściowych}
+	\zrodlo{\cite{ertel}}
+	\label{fig:neurony2}
+\end{figure}
+
+Często używaną funkcją skokową jest \textbf{funkcja Heaviside'a}, określona równaniem 
+
+$$H(z)=\begin{cases}
+0, & \text{ jeśli } z<0\\
+1, & \text{ jeśli } z \geq 0
+\end{cases}$$
+
+Czasami stosuje się również \textbf{funkcję signum}
+
+$$sgn(z)=\begin{cases}
+-1 & \text{ jeśli } z<0\\
+0, & \text{ jeśli } z=0\\
+1, & \text{ jeśli } z > 0
+\end{cases}$$
+
+Perceptron jest złożony z jednej warstwy jednostek TLU, w której każdy neuron jest połączony ze wszystkimi wejściami. Tego typu warstwa jest nazywana \textbf{warstwą gęstą}. Warstwa, do której są dostarczane dane wejściowe, jest nazywana \textbf{warstwą wejściową} (ang. \textit{input layer}). Najczęściej do tej warstwy jest wstawiany również \textbf{neuron obciążeniowy} (ang. \textit{bias neuron}) $x_0=1$, który zawsze wysyła wartość 1. Na rysunku \ref{fig:perceptron1} znajduje się perceptron z dwoma neuronami wejściowymi i jednym obciążeniowym, a także z trzema neuronami w warstwie wyjściowej.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=10cm]{rys/perceptron1.png}
+	\caption{Perceptron z trzema neuronami wejściowymi i trzema wyjściami}
+	\zrodlo{\cite{geron}}
+	\label{fig:perceptron1}
+\end{figure}
+
+Obliczanie sygnałów wyjściowych w warstwie gęstej przedstawia się wzorem
+$$h_{\mathbf{W},\mathbf{b}}(\mathbf{X})=\phi(\mathbf{XW}+\mathbf{b})$$
+gdzie $\mathbf{X}$ - macierz cech wejściowych, $\mathbf{W}$ - macierz wag połączeń (oprócz neuronu obciążeniowego), $\mathbf{b}$ - wektor obciążeń zawierający wagi połączeń neuronu obciążeniowego ze wszystkimi innymi neuronami, $\phi$ - tzw. \textbf{funkcja aktywacji}, w przypadku TLU jest to funkcja skokowa.
+
+Algorytm uczący, który służy do trenowania perceptronu, jest silnie inspirowany działaniem neuronu biologicznego. Gdy biologiczny neuron często pobudza inną komórkę nerwową, to połączenia między nimi stają się silniejsze. Reguła ta jest nazywana \textbf{regułą Hebba}. Perceptrony są uczone za pomocą odmiany tej reguły, w której połączenia są wzmacniane, jeśli pomagają zmniejszyć wartość błędu. Dokładniej, w danym momencie perceptron przetwarza jeden przykład uczący i wylicza dla niego predykcję. Na każdy neuron wyjściowy odpowiadający za nieprawidłową prognozę następuje zwiększenie wag połączeń ze wszystkimi wejściami przyczyniającymi się do właściwej prognozy. Aktualizowanie wag przedstawia się następującym wzorem
+$$\Delta w_{ij}=\eta (y_j-\hat{y_j})x_i$$
+gdzie $w_{ij}$ - waga połączenia między $i$-tym neuronem wejściowym a $j$-tym neuronem wyjściowym, $x_i$ - $i$-ta wartość wejściowa bieżącego przykładu uczącego, $\hat{y_j}$ - wynik $j$-tego neuronu wyjściowego dla bieżącego przykładu uczącego, $y_j$ - docelowy wynik $j$-tego neuronu, $\eta$ - współczynnik uczenia.
+
+Perceptron ma wiele wad związanych z niemożnością rozwiązania pewnych trywialnych problemów (np. zadanie klasyfikacji rozłącznej czyli XOR). Część tych ograniczeń można wyeliminować, stosując architekturę SSN złożoną z wielu warstw perceptronów, czyli \textbf{perceptron wielowarstwowy} (ang. \emph{Multi-Layer Perceptron}). Składa się on z jednej warstwy wejściowej (przechodniej), co najmniej jednej warstwy jednostek TLU - tzw. \textbf{warstwy ukryte} (ang. \emph{latent layers}) i ostatniej warstwy jednostek TLU - warstwy wyjściowej. Oprócz warstwy wejściowej każda warstwa zawiera neuron obciążający i jest w pełni połączona z następną wartswą. Sieć zawierająca wiele warstw ukrytych nazywamy \textbf{głęboką siecią neuronową} (ang. \emph{Deep Neural Network} - DNN). 
+
+Do uczenia perceptronów wielowarstwowych wykorzystywany jest algorytm \textbf{propagacji wstecznej} (ang. \emph{backpropagation}). Propagacja wsteczna jest właściwie algorytmem gradientu prostego \cite{skansi}. Można go zapisać jako
+$$w_{updated}=w_{old}-\eta \nabla E$$
+gdzie $E$ jest funkcją kosztu (funkcją straty) \cite{skansi}. Proces jest powtarzany do momentu uzyskania zbieżności z rozwiązaniem, a każdy przebieg jest nazywany \textbf{epoką} (ang. \emph{epoch}).
+
+\begin{uwaga}
+	Wagi połączeń wszystkich warstw ukrytych należy koniecznie zainicjować losowo. W przeciwnym przypadku proces uczenia zakończy się niepowodzeniem. Na przykład jeśli wszystkie wagi i obciążenia zostaną zainicjowane wartością 0, to model będzie działał tak, jak gdyby składał się tylko z jednego neuronu. Przy zainicjowaniu wag losowo, symetria zostanie złamana i algorytm propagacji wstecznej będzie w stanie wytrenować zespół zróżnicowanych neuronów \cite{geron}. 
+\end{uwaga}
+
+Aby algorytm propagacji wstecznej działał prawidłowo, kluczową zmianą jest zastąpienie funkcji skokowej przez inne \textbf{funkcje aktywacji}. Zmiana ta jest konieczna, ponieważ funkcja skokowa zawiera jedynie płaskie segmenty i przez to nie pozwala korzystać z gradientu. 
+
+Najczęściej używana jest \textbf{funkcja logistyczna (sigmoidalna)}
+$$\sigma(z)=\frac{1}{1+e^{-z}}$$
+Ma ona w każdym punkcie zdefiniowaną pochodną niezerową, dzięki czemu algorytm gradientu prostego może na każdym etapie uzyskać lepsze wyniki. Zbiór wartości tej funkcji wynosi od 0 do 1.
+
+Inną popularną funkcją aktywacji jest \textbf{tangens hiperboliczny}
+$$\operatorname{tanh}(z)=2\sigma(2z)-1$$
+Funkcja ta jest ciągła i różniczkowalna, a jej zakres wartości wynosi $-1$ do 1. Dzięki temu zakresowi wartości wynik każdej warstwy jest wyśrodkowany wobec zera na początku uczenia, co często pomaga w szybszym uzyskaniu zbieżności.
+
+Wśród popularnych funkcji aktywacji należy także wyróżnić  \textbf{funkcję ReLU} (ang. \emph{Rectified Linear Unit} - prostowana jednostka liniowa) o wzorze
+$$ReLU(z)=max(0,z).$$
+Jest ona ciągła, ale nieróżniczkowalna w punkcie 0. Jej pochodna dla $z<0$ wynosi zero. Jej atutem jest szybkość przetwarzania. Nie ma ona maksymalnej wartości wyjściowej.
+W zadaniach regresji bywa wykorzystywany ,,wygładzony'' wariant funkcji ReLU, czyli funkcja \textbf{softplus}:
+$$softplus(z)=log(1+exp(z))$$
+
+Na  rysunku \ref{fig:funkcje-aktywacji} przedstawiono popularne funkcje aktywacji wraz z ich pochodnymi.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys/funkcje_aktywacji.png}
+	\caption{Przykładowe funkcje aktywacji wraz z pochodnymi}
+	\zrodlo{\cite{geron}}
+	\label{fig:funkcje-aktywacji}
+\end{figure}
+
+\section{Sieci splotowe}
+
+Sieci splotowe, nazywane również \textbf{splotowymi sieciami neuronowymi} (ang. \emph{convolutional neural networks}, CNN), są rodzajem sieci neuronowych służących do przetwarzania danych o znanej topologii siatki. Przykładem takich danych są szeregi czasowe, które można uznać za jednowymiarową siatkę z próbkami w regularnych odstępach czasu, oraz dane graficzne, które można interpretować jako dwuwymiarową siatkę pikseli. Nazwa sieci splotowych pochodzi od wykorzystywanego przez te sieci działania matematycznego nazywanego \textbf{splotem} (konwolucją). Można powiedzieć, że sieci splotowe to po prostu sieci neuronowe, które w przynajmniej jednej z warstw zamiast ogólnego mnożenia macierzy wykorzystują splot \cite{goodfellow}.
+
+\section{Czym jest autoenkoder}
+
+	\textbf{Autoenkoder} (czasem także nazywany autokoderem, z ang. \textit{autoencoder}, \textit{auto-encoder}) jest specjalnym typem sieci neuronowej, która jest przeznaczona głównie do kodowania danych wejściowych do skompresowanej i znaczącej reprezentacji, a następnie dekodowania ich z powrotem w taki sposób, aby zrekonstruowane dane były jak najbardziej podobne do oryginalnych \cite{bank}. Autoenkodery uczą się gęstych reprezentacji danych, tzw. reprezentacji ukrytych (ang. \emph{latent representations}) lub kodowań (ang. \emph{codings}) bez jakiejkolwiek formy nadzorowania (tzn. zbiór danych nie zawiera etykiet). Wyjściowe kodowania zazwyczaj mają mniejszą wymiarowość od danych wejściowych, dzięki czemu autoenkodery mogą z powodzeniem służyć do redukcji wymiarowości. Mają też zastosowanie w \textbf{modelach generatywnych} (ang. \emph{generative models}), które potrafią losowo generować nowe dane przypominające zbiór uczący. Jeszcze lepszej jakości dane można uzyskać przy użyciu \textbf{generatywnych sieci przeciwstawnych}, czyli GAN (ang. \textit{Generative Adversial Networks}). Sieci GAN są często stosowane w zadaniach zwiększania rozdzielczości obrazu, koloryzowania, rozbudowanego edytowania zdjęć, przekształcania prostych szkiców w realistyczne obrazy, dogenerowywania danych służących do uczenia innych modeli, generowania innych typów danych np. tekstowych, dźwiękowych, itd. \cite{geron}.
+
+
 \chapter{Przykłady zastosowań autoenkoderów}
 
 \chapter*{Podsumowanie i~wnioski}
@@ -413,6 +513,8 @@ nr albumu: 89892
 
 \bibitem{aggarwal} Aggarwal, C. C. (2018).\emph{ Neural Networks and Deep Learning}, Springer International Publishing
 
+\bibitem{bank} Bank D., Koenigstein N., Giryes R. (2021), \emph{Autoencoders}, arXiv:2003.05991v2
+
 \bibitem{chollet} Chollet F., Allaire J. J. (2019) \emph{Deep Learning. Praca z językiem R i biblioteką Keras}, Helion SA
 
 \bibitem{edureka} Edureka, Autoencoders Tutorial. Autoencoders in Deep Learning. Tensorflow Training \url{https://www.youtube.com/watch?v=nTt_ajul8NY} 
@@ -421,6 +523,9 @@ nr albumu: 89892
 
 \bibitem{geron} G\'eron A. (2020) \emph{Uczenie maszynowe z użyciem Scikit-Learn i TensorFlow. Wydanie II}, Helion SA
 
+\bibitem{goodfellow} Goodfellow I., Bengio Y., Courville A. (2018), \emph{Deep Learning. Systemy uczące się}, PWN, Warszawa 
+
+\bibitem{osinga} Osinga D. (2019) \emph{Deep Learning. Receptury}, Helion SA
 
 \bibitem{skansi} Skansi S. (2018) \emph{Introduction to Deep Learning. From Logical Calculus to Artificial Intelligence}, Springer International Publishing
 

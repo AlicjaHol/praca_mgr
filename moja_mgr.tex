@@ -504,7 +504,104 @@ Sieci splotowe, nazywane również \textbf{splotowymi sieciami neuronowymi} (ang
 	\textbf{Autoenkoder} (czasem także nazywany autokoderem, z ang. \textit{autoencoder}, \textit{auto-encoder}) jest specjalnym typem sieci neuronowej, która jest przeznaczona głównie do kodowania danych wejściowych do skompresowanej i znaczącej reprezentacji, a następnie dekodowania ich z powrotem w taki sposób, aby zrekonstruowane dane były jak najbardziej podobne do oryginalnych \cite{bank}. Autoenkodery uczą się gęstych reprezentacji danych, tzw. reprezentacji ukrytych (ang. \emph{latent representations}) lub kodowań (ang. \emph{codings}) bez jakiejkolwiek formy nadzorowania (tzn. zbiór danych nie zawiera etykiet). Wyjściowe kodowania zazwyczaj mają mniejszą wymiarowość od danych wejściowych, dzięki czemu autoenkodery mogą z powodzeniem służyć do redukcji wymiarowości. Mają też zastosowanie w \textbf{modelach generatywnych} (ang. \emph{generative models}), które potrafią losowo generować nowe dane przypominające zbiór uczący. Jeszcze lepszej jakości dane można uzyskać przy użyciu \textbf{generatywnych sieci przeciwstawnych}, czyli GAN (ang. \textit{Generative Adversial Networks}). Sieci GAN są często stosowane w zadaniach zwiększania rozdzielczości obrazu, koloryzowania, rozbudowanego edytowania zdjęć, przekształcania prostych szkiców w realistyczne obrazy, dogenerowywania danych służących do uczenia innych modeli, generowania innych typów danych np. tekstowych, dźwiękowych, itd. \cite{geron}.
 
 
+(Chapter 14 Autoencoders \cite{goodfellow})
+
+An autoencoder is a neural network that is trained to attempt to copy its input
+to its output. Internally, it has a hidden layer h that describes a code used to
+represent the input. The network may be viewed as consisting of two parts: an
+encoder function h = f (x) and a decoder that produces a reconstruction r = g(h).
+This architecture is presented in figure 14.1 . If an autoencoder succeeds in simply
+learning to set g(f (x)) = x everywhere, then it is not especially useful. Instead,
+autoencoders are designed to be unable to learn to copy perfectly. Usually they are
+restricted in ways that allow them to copy only approximately, and to copy only
+input that resembles the training data. Because the model is forced to prioritize
+which aspects of the input should be copied, it often learns useful properties of the
+data.
+
+Rodzaje autoenkoderów:
+
+- niedopełniony (undercomplete)
+
+- stosowy (stacked) lub inaczej głęboki (deep)
+
+- splotowy (convolutional)
+
+- rekurencyjny (recurrent)
+
+- odszumiający (stacked denoising)
+
+- rzadki (sparse)
+
+- wariancyjny (variational)
+
+
+
+
 \chapter{Przykłady zastosowań autoenkoderów}
+
+\section{Analiza PCA za pomocą autoenkodera niedopełnionego}
+
+Jeśli autoenkoder korzysta jedynie z liniowych funkcji aktywacji, a funkcją kosztu jest  błąd średniokwadratowy (MSE), to będzie on przeprowadzał analizę składowych głównych PCA \cite{geron}. Na rysunku \ref{fig:PCA-kod} widoczny jest kod w języku Python służący do utworzenia takiego autoenkodera, który przeprowadzi analizę PCA na zbiorze trójwymiarowym, rzutując go na przestrzeń dwuwymiarową. Można zauważyć podział autoenkodera na dwie części - enkoder i dekoder. Enkoder przyjmuje dane wejściowe o wymiarze 3, a na wyjściu pojawiają się dane dwuwymiarowe. W przypadku dekodera jest odwrotnie - dane na wejściu są dwuwymiarowe, a na wyjściu trójwymiarowe. Obydwie części są modelami sekwencyjnymi z jedną warstwą gęstą, a cały autoenkoder jest modelem sekwencyjnym, w którym po enkoderze występuje dekoder.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys/autoenkoder_PCA_kod.png}
+	\caption{Tworzenie autoenkodera niedopełnionego przeprowadzającego PCA}
+	\zrodlo{Opracowanie własne na podstawie \cite{geron}}
+	\label{fig:PCA-kod}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=7cm]{rys/ae_undercomplete.png}
+	\caption{Architektura autoenkodera niedopełnionego}
+	\zrodlo{\cite{geron}}
+	\label{fig:ae-undercomplete}
+\end{figure}
+
+\newpage
+
+Opisany autoenkoder zostanie wyuczony na wygenerowanym zbiorze trójwymiarowych danych. Warto zwrócić uwagę, że zbiór uczący stanowi jednocześnie dane wejściowe i dane docelowe. Po wytrenowaniu modelu, używamy enkodera do zakodowania danych wejściowych, czyli do zrzutowania ich na przestrzeń dwuwymiarową. Na rysunku \ref{fig:PCA-3d} zaprezentowany jest trójwymiarowy zbiór danych. Rysunek \ref{fig:PCA-2d} przedstawia wynik działania autoenkodera, a więc dane zrzutowane na przestrzeń 2D. Z kolei na rysunku \ref{fig:PCA-zwykle} widoczne jest rzutowanie uzyskane przy użyciu ,,zwykłego'' algorytmu PCA. Na podstawie tych wykresów można stwierdzić, że rzutowanie uzyskane przy pomocy autoenkodera oraz PCA jest takie samo, jedynie układ współrzędnych jest odwrócony o 180 stopni.
+
+\newpage
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=10cm]{rys/pca3d_dane.png}
+	\caption{Wygenerowane dane trójwymiarowe}
+	\zrodlo{Opracowanie własne na podstawie \cite{geron}}
+	\label{fig:PCA-3d}
+\end{figure}
+
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=10cm]{rys/pca2d_dane.png}
+	\caption{Rzutowanie dwuwymiarowe przy użyciu autoenkodera, zachowujące maksymalną wariancję}
+	\zrodlo{Opracowanie własne na podstawie \cite{geron}}
+	\label{fig:PCA-2d}
+\end{figure}
+
+\newpage
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=10cm]{rys/pca_zwykle.png}
+	\caption{Rzutowanie dwuwymiarowe przy użyciu PCA, zachowujące maksymalną wariancję}
+	\zrodlo{Opracowanie własne na podstawie \cite{geron}}
+	\label{fig:PCA-zwykle}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=10cm]{rys/ae_undercomplete_loss.png}
+	\caption{Wartość funkcji straty w kolejnych epokach podczas uczenia modelu}
+	\zrodlo{Opracowanie własne}
+	\label{fig:undercomplete-loss}
+\end{figure}
+
+\section{Kolejny przykład}
+
 
 \chapter*{Podsumowanie i~wnioski}
 

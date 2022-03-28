@@ -499,6 +499,65 @@ Na  rysunku \ref{fig:funkcje-aktywacji} przedstawiono popularne funkcje aktywacj
 
 Sieci splotowe, nazywane również \textbf{splotowymi sieciami neuronowymi} (ang. \emph{convolutional neural networks}, CNN), są rodzajem sieci neuronowych służących do przetwarzania danych o znanej topologii siatki. Przykładem takich danych są szeregi czasowe, które można uznać za jednowymiarową siatkę z próbkami w regularnych odstępach czasu, oraz dane graficzne, które można interpretować jako dwuwymiarową siatkę pikseli. Nazwa sieci splotowych pochodzi od wykorzystywanego przez te sieci działania matematycznego nazywanego \textbf{splotem} (konwolucją). Można powiedzieć, że sieci splotowe to po prostu sieci neuronowe, które w przynajmniej jednej z warstw zamiast ogólnego mnożenia macierzy wykorzystują splot \cite{goodfellow}.
 
+
+\cite{geron}
+
+Splotowe sieci neuronowe stanowią wynik badań nad korą wzrokową. Są używane głównie do rozpoznawania obrazów (od lat 80-tych XX w.).
+
+Zagadnienia rozpoznawania obrazu:
+\begin{itemize}
+	\item klasyfikacja
+	\item detekcja obrazów
+	\item transfer stylu
+\end{itemize}
+
+Neurony biologiczne w korze wzrokowej reagują na określone wzorce w niewielkich obszarach pola wzrokowego, zwanych polami recepcyjnymi; w miarę przepływu sygnału wzrokowego przez kolejne moduły w mózgu neurony rozpoznają coraz bardziej skomplikowane wzorce wykrywane w coraz większych polach recepcyjnych.
+
+Wiele neuronów tworzących korę wzrokową tworzą lokalne pola recepcyjne, reagujące jedynie na bodźce wzrokowe mieszczące się w określonym rejonie pola wzrokowego.
+
+Pola recepcyjne poszczególnych neuronów mogą się na siebie nakładać.
+
+Pola recepcyjne łącznie tworzą całe pole wzrokowe.
+
+Pewne neurony reagują wyłącznie na obrazy składające się z linii poziomych, lub innych linii ułożonych w konkretny sposób.
+
+Niektóre komórki nerwowe mają większe pola recepcyjne i wykrywają bardziej skomplikowane kształty.
+
+Neurony odpowiedzialne za rozpoznawanie bardziej skomplikowanych kształtów znajdują się na wyjściu neuronów reagujących na prostsze bodźce.
+
+
+\subsection{Hiperparametry filtru konwolucyjnego}
+
+\cite{illustrated}
+
+Warstwy konwolucyjne w przeciwieństwie do zagęszczonych, nie są w pełni połączone. Oznacza to, że w pierwszej warstwie ukrytej nie są wiązane wagi wszystkich pikseli ze wszystkimi neuronami. Zamiast tego stosowanych jest kilka wymienionych niżej hiperparametrów określających liczbę wag i odchyleń związanych z daną warstwą konwolucyjną:
+\begin{itemize}
+	\item wielkość jądra (kernel size) - jądro (zwane również filtrem lub polem receptywnym) typowo ma wysokość i szerokość trzech pikseli. Rozmiar ten okazał się optymalny w szerokim zakresie zastosowań widzenia maszynowego w nowoczesnych sieciach konwolucyjnych. Popularna jest również wielkość 5x5 pikseli, a maksymalny stosowany rozmiar to 7x7 pikseli. Jeśli jądro jest zbyt duże w stosunku do obrazu, wtedy w polu receptywnym pojawia się zbyt wiele cech i warstwa konwolucyjna nie jest w stanie się skutecznie uczyć. Jeżeli jądro jest zbyt małe, np. ma wymiary 2x2 piksele, nie jest w stanie dopasować się do żadnej struktury, przez co jest bezużyteczne.
+	
+	\item długość kroku (stride length) - oznacza odległość, o jaką jądro przesuwa się po obrazie. Często stosowaną wielkością jest długość jednego piksela. Często wybieraną długością są również dwa piksele, rzadziej trzy. Dłuższe kroki nie są stosowane, ponieważ jądro może wtedy pomijać obszary obrazu potencjalnie wartościowe dla modelu. Z drugiej strony, im dłuższy krok, tym większa szybkość uczenia się modelu, ponieważ jest mniej obliczeń do wykonania. Trzeba znajdować kompromis między tymi efektami.
+	
+	\item dopełnienie (padding) - jest ściśle związane z długością kroku. Zapewnia poprawność obliczeń w warstwie konwolucyjnej.
+	
+\end{itemize}	
+	
+	\subsection{Warstwy redukujące}
+	
+	\cite{illustrated}
+	
+	Warstwy konwolucyjne często współpracują z innego typu warstwami, stanowiącymi fundament sieci neuronowych i widzenia maszynowego. Są to warstwy redukujące (pooling layers), których zadaniem jest zmniejszanie ogólnej liczby parametrów sieci, redukowanie złożoności, przyspieszanie obliczeń i zapobieganie nadmiernemu dopasowaniu modelu.
+	
+	Warstwa konwolucyjna może zawierać dowolną liczbę jąder, z których każde generuje mapę aktywacji. Zatem wyjście warstwy konwolucyjnej jest trójwymiarowa tablica aktywacji, której głębokość jest równa liczbie filtrów. Warstwa redukująca zmniejsza przestrzenny wymiar mapy aktywacji, pozostawiając jej głębokość bez zmian.
+	
+	Z warstwą redukującą, podobnie jak z konwolucyjną, jest związany filtr i długość kroku. Filtr przesuwa się nad danymi wejściowymi, tak jak w warstwie konwolucyjnej, i w każdej zajmowanej pozycji przeprowadza operację redukcji danych. Najczęściej jest to wybieranie największej wartości, dlatego taka warstwa jest również określana mianem maksymalnie redukującej (max-pooling layer). Z całego pola receptywnego jest wybierana największa wartość (maksymalna aktywacja), a pozostałe wartości są odrzucane. Filtr w warstwie redukującej ma zazwyczaj wymiary 2x2 piksele, a krok ma długość dwóch pikseli. W takim wypadku filtr w każdej pozycji przetwarza cztery wartości aktywacji, wybiera największą i w efekcie czterokrotnie redukuje liczbę aktywacji. Ponieważ operacja redukcji jest wykonywana niezależnie w każdym wycinku trójwymiarowej tablicy, mapa aktywacji o wymiarach 28x28 elementów i głębokości 16 wycinków jest redukowana do tablicy 14x14 elementów. Zachowywana jest jednak jej pełna głębokość 16 wycinków.
+	
+	\begin{figure}[!h]
+		\centering
+		\includegraphics[width=\linewidth]{rys/max-polling.png}
+		\caption{Max polling}
+		\zrodlo{\cite{illustrated}}
+		\label{fig:max-polling}
+	\end{figure}
+	
 \section{Czym jest autoenkoder}
 
 	\textbf{Autoenkoder} (czasem także nazywany autokoderem, z ang. \textit{autoencoder}, \textit{auto-encoder}) jest specjalnym typem sieci neuronowej, która jest przeznaczona głównie do kodowania danych wejściowych do skompresowanej i znaczącej reprezentacji, a następnie dekodowania ich z powrotem w taki sposób, aby zrekonstruowane dane były jak najbardziej podobne do oryginalnych \cite{bank}. Autoenkodery uczą się gęstych reprezentacji danych, tzw. reprezentacji ukrytych (ang. \emph{latent representations}) lub kodowań (ang. \emph{codings}) bez jakiejkolwiek formy nadzorowania (tzn. zbiór danych nie zawiera etykiet). Wyjściowe kodowania zazwyczaj mają mniejszą wymiarowość od danych wejściowych, dzięki czemu autoenkodery mogą z powodzeniem służyć do redukcji wymiarowości. Mają też zastosowanie w \textbf{modelach generatywnych} (ang. \emph{generative models}), które potrafią losowo generować nowe dane przypominające zbiór uczący. Jeszcze lepszej jakości dane można uzyskać przy użyciu \textbf{generatywnych sieci przeciwstawnych}, czyli GAN (ang. \textit{Generative Adversial Networks}). Sieci GAN są często stosowane w zadaniach zwiększania rozdzielczości obrazu, koloryzowania, rozbudowanego edytowania zdjęć, przekształcania prostych szkiców w realistyczne obrazy, dogenerowywania danych służących do uczenia innych modeli, generowania innych typów danych np. tekstowych, dźwiękowych, itd. \cite{geron}.
@@ -518,6 +577,20 @@ input that resembles the training data. Because the model is forced to prioritiz
 which aspects of the input should be copied, it often learns useful properties of the
 data.
 
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=6cm]{rys/autoencoder_structure.png}
+	\caption{The general structure of an autoencoder, mapping an input x to an output
+		(called reconstruction) r through an internal representation or code h. The autoencoder
+		has two components: the encoder f (mapping x to h) and the decoder g (mapping h
+		to r ).}
+	\zrodlo{\cite{goodfellow}}
+	\label{fig:autoencoder_structue}
+\end{figure}
+
+\section{Rodzaje autoenkoderów}
+
 Rodzaje autoenkoderów:
 
 - niedopełniony (undercomplete)
@@ -534,6 +607,48 @@ Rodzaje autoenkoderów:
 
 - wariancyjny (variational)
 
+
+
+\subsection{Autoenkodery niedopełnione}
+
+\cite{goodfellow}
+
+Copying the input to the output may sound useless, but we are typically not
+interested in the output of the decoder. Instead, we hope that training the
+autoencoder to perform the input copying task will result in h taking on useful
+properties.
+One way to obtain useful features from the autoencoder is to constrain h to
+have a smaller dimension than x. An autoencoder whose code dimension is less
+than the input dimension is called undercomplete. Learning an undercomplete
+representation forces the autoencoder to capture the most salient features of the
+training data.
+
+The learning process is described simply as minimizing a loss function
+$$L(x, g(f(x)))$$
+where L is a loss function penalizing g(f(x)) for being dissimilar from x, such as
+the mean squared error.
+When the decoder is linear and L is the mean squared error, an undercomplete
+autoencoder learns to span the same subspace as PCA.
+
+\subsection{Autoenkodery stosowe}
+
+(kopiowane z Gerona:)
+
+Autokodery, podobnie jak w przypadku innych rodzajów sieci neuronowych, również mogą mieć
+wiele warstw ukrytych. W takiej sytuacji są one nazywane autokoderami stosowymi (ang. stacked
+autoencoders) lub głębokimi (ang. deep autoencoders). Kolejne warstwy ukryte pozwalają autokode-
+rowi uczyć się bardziej skomplikowanych kodowań. Jednak musimy uważać, aby nie stworzyć
+zbyt potężnego modelu. Wyobraź sobie tak wydajny autokoder, że nauczyłby się rzutować każdy
+przykład wejściowy do postaci dowolnej pojedynczej liczby (a dekoder uczyłby się odwrotnego rzuto-
+wania). Oczywiście taki autokoder potrafiłby doskonale rekonstruować dane uczące, ale w trakcie
+tego procesu nie nauczy się żadnej przydatnej reprezentacji danych (i raczej nie będzie w stanie dobrze
+generalizować przewidywań na nowe próbki).
+Architektura autokodera stosowego najczęściej jest symetryczna względem centralnej warstwy ukrytej
+(kodowania). Najprościej mówiąc, przypomina ona kanapkę. Na przykład autokoder klasyfikujący
+obrazy MNIST (zbiór ten został opisany w rozdziale 3.) może zawierać 784 wejścia, po których nastę-
+puje stuneuronowa warstwa ukryta, następnie środkowa warstwa ukryta zawierająca 30 jednostek,
+a po niej kolejna stuneuronowa warstwa ukryta przechodząca w warstwę wyjściową mającą 784 wyj-
+ścia.
 
 
 
@@ -621,6 +736,8 @@ Opisany autoenkoder zostanie wyuczony na wygenerowanym zbiorze trójwymiarowych 
 \bibitem{geron} G\'eron A. (2020) \emph{Uczenie maszynowe z użyciem Scikit-Learn i TensorFlow. Wydanie II}, Helion SA
 
 \bibitem{goodfellow} Goodfellow I., Bengio Y., Courville A. (2018), \emph{Deep Learning. Systemy uczące się}, PWN, Warszawa 
+
+\bibitem{illustrated} Krohn J., Beyleveld G., Bassens A., \emph{Uczenie głębokie i sztuczna inteligencja. Interaktywny przewodnik ilustrowany}, Helion 2022
 
 \bibitem{osinga} Osinga D. (2019) \emph{Deep Learning. Receptury}, Helion SA
 

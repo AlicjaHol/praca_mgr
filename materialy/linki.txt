@@ -1,0 +1,14 @@
+https://www.r-bloggers.com/2018/07/pca-vs-autoencoders-for-dimensionality-reduction/
+https://www.youtube.com/watch?v=g7ZihYu0Qxs
+https://www.youtube.com/watch?v=43VWdMgjVkQ
+https://bradleyboehmke.github.io/HOML/autoencoders.html
+https://blog.keras.io/building-autoencoders-in-keras.html
+https://www.youtube.com/watch?v=Alkm-PJu9To
+
+https://www.kaggle.com/michalbrezk/denoise-images-using-autoencoders-tf-keras
+https://www.kaggle.com/shivamb/how-autoencoders-work-intro-and-usecases
+https://www.kaggle.com/shivamb/semi-supervised-classification-using-autoencoders
+https://www.kaggle.com/valkling/image-colorization-using-autoencoders-and-resnet
+https://www.kaggle.com/fazilbtopal/variantional-autoencoders-vae
+https://www.kaggle.com/dimitreoliveira/time-series-forecasting-with-lstm-autoencoders
+https://www.kaggle.com/imcr00z/autoencoders-face-generation

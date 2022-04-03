@@ -595,6 +595,8 @@ Rodzaje autoenkoderów:
 
 - niedopełniony (undercomplete)
 
+ - regularyzowany (regularized, overcomplete)
+
 - stosowy (stacked) lub inaczej głęboki (deep)
 
 - splotowy (convolutional)
@@ -649,6 +651,206 @@ obrazy MNIST (zbiór ten został opisany w rozdziale 3.) może zawierać 784 wej
 puje stuneuronowa warstwa ukryta, następnie środkowa warstwa ukryta zawierająca 30 jednostek,
 a po niej kolejna stuneuronowa warstwa ukryta przechodząca w warstwę wyjściową mającą 784 wyj-
 ścia.
+
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys/autoenkoder_stosowy.png}
+	\caption{Stosowy}
+	\zrodlo{\cite{geron}}
+	\label{fig:autoenkoder-stosowy}
+\end{figure}
+
+
+\subsection{Autoenkoder splotowy}
+
+\cite{geron}
+
+Koderem jest tradycyjna sieć splotowa składająca się z warstw splotowych i łączących. Zazwyczaj zmniejsza ona wymiarowość danych wejściowych (wysokość i szerokość
+obrazu), a jednocześnie zwiększa ich głębokość (liczbę map cech). Dekoder musi przeprowadzać
+odwrotną operację (zwiększyć rozdzielczość obrazu i zredukować głębokość do pierwotnej liczby
+wymiarów), dlatego możemy w tym celu wykorzystać transponowane warstwy splotowe (ewentualnie możesz łączyć warstwy ekspansji z warstwami splotowymi).
+
+
+\subsection{Autoenkoder rekurencyjny}
+
+\cite{geron}
+
+Jeżeli chcesz tworzyć autokodery przeznaczone do przetwarzania sekwencji, takich jak szeregi czasowe
+czy teksty (np. nienadzorowanego uczenia wstępnego lub redukowania wymiarowości), to reku-
+rencyjne sieci neuronowe (zob. rozdział 15.) mogą nadawać się do tego zadania lepiej niż sieci gęste.
+Budowanie autokodera rekurencyjnego (ang. recurrent autoencoder) jest proste: koder stanowi
+zazwyczaj sieć sekwencyjno-wektorową, która kompresuje sekwencję wejściową do postaci poje-
+dynczego wektora. Dekoder to sieć wektorowo-sekwencyjna przeprowadzająca odwrotną operację
+
+\begin{verbatim}
+recurrent_encoder = keras.models.Sequential([
+keras.layers.LSTM(100, return_sequences=True, input_shape=[None, 28]),
+keras.layers.LSTM(30)
+])
+recurrent_decoder = keras.models.Sequential([
+keras.layers.RepeatVector(28, input_shape=[30]),
+keras.layers.LSTM(100, return_sequences=True),
+keras.layers.TimeDistributed(keras.layers.Dense(28, activation="sigmoid"))
+])
+recurrent_ae = keras.models.Sequential([recurrent_encoder, recurrent_decoder])
+\end{verbatim}
+
+Taki autokoder rekurencyjny może przetwarzać sekwencje o dowolnej długości, które w każdym
+takcie zawierają 28 wymiarów. Jest to dla nas dogodne, ponieważ oznacza, że możemy traktować
+obrazy z zestawu Fashion MNIST tak, jakby każdy obraz stanowił sekwencję rzędów: w każdym
+takcie sieć rekurencyjna będzie przetwarzać pojedynczy, 28-elementowy rząd pikseli. Oczywiście
+autokoder rekurencyjny może być stosowany wobec dowolnego rodzaju sekwencji. Zwróć uwagę,że jeśli jako pierwszą warstwę dekodera wstawimy RepeatVector , to musimy sprawić, żeby w każdym
+takcie do dekodera był dostarczany wektor wejściowy.
+
+
+Do tej pory zmuszaliśmy autokoder do rozpoznawania interesujących cech, ograniczając rozmiar
+warstwy kodowania, przez co był on niedopełniony. W rzeczywistości istnieje wiele rodzajów
+ograniczeń, które możemy wykorzystać, w tym również umożliwiające stosowanie warstwy kodowa-
+nia o takim samym rozmiarze jak wejściowa, a nawet jeszcze większej, co pozwala uzyskać autokoder
+przepełniony (ang. overcomplete autoencoder). Sprawdźmy teraz te inne rozwiązania.
+
+\subsection{Autoenkodey odszumiające}
+
+\cite{geron}
+
+Kolejną metodą zmuszania autokodera do poznawania przydatnych cech jest dodawanie szumu
+do danych wejściowych i uczenie go odzyskiwania pierwotnych, niezaszumionych informacji. Pierw-
+sze koncepcje wykorzystania autokoderów do odszumiania danych pojawiły się już w latach 80. ubie-
+głego wieku (m.in. pomysł ten został wspomniany w pracy magisterskiej Yanna LeCuna w 1987 roku).
+Pascal Vincent i in. udowodnili w publikacji z 2008 roku (https://www.iro.umontreal.ca/~vincentp/
+Publications/denoising\_autoencoders\_tr1316.pdf) 5 , że autokodery mogą być również używane do
+wydobywania cech. Z kolei ten sam autor i in. w artykule z 2010 roku (http://jmlr.csail.mit.edu/
+papers/v11/vincent10a) 6 zaprezentowali odszumiające autokodery stosowe (ang. stacked denoising
+autoencoders).
+Zaszumienie może być standardowym szumem gaussowskim dodawanym do danych wejściowych lub
+może przybrać postać losowo wyłączanych wejść za pomocą metody porzucania (zob. rozdział 11.).
+Obydwa rozwiązania zostały pokazane na rysunku 17.8.
+Implementacja nie stanowi wyzwania: jest to standardowy autokoder stosowy zawierający dodatkową
+warstwę Dropout , przez którą przechodzą dane wejściowe (możesz zastąpić ją warstwą GaussianNoise ).
+Jak pamiętamy, warstwa Dropout jest aktywna jedynie w fazie uczenia (podobnie jak warstwa
+GaussianNoise ):
+\begin{verbatim}
+dropout_encoder = keras.models.Sequential([
+keras.layers.Flatten(input_shape=[28, 28]),
+keras.layers.Dropout(0.5),
+keras.layers.Dense(100, activation="selu"),
+keras.layers.Dense(30, activation="selu")
+])
+dropout_decoder = keras.models.Sequential([
+keras.layers.Dense(100, activation="selu", input_shape=[30]),
+keras.layers.Dense(28 * 28, activation="sigmoid"),
+keras.layers.Reshape([28, 28])
+])
+dropout_ae = keras.models.Sequential([dropout_encoder, dropout_decoder])
+\end{verbatim}
+
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys/autoenkoder_odszumiajacy.png}
+	\caption{Autokodery odszumiające: wykorzystujące szum gaussowski (po lewej) lub metodę porzucania
+		(po prawej)}
+	\zrodlo{\cite{geron}}
+	\label{fig:autoenkoder-odszumiajacy}
+\end{figure}
+
+
+Rysunek 17.9 przedstawia kilka zaszumionych obrazów (połowa pikseli została „wyłączona”), a także
+ich rekonstrukcje uzyskane za pomocą autokodera odszumiającego (bazującego na warstwie po-
+rzucania). Zwróć uwagę, że autokoder w istocie „zgaduje” szczegóły niewystępujące w obrazach wej-
+ściowych, na przykład górną część białej sukienki (czwarty obraz w dolnym rzędzie). Jak widać,
+autokodery odszumiające służą nie tylko do wizualizowania danych lub nienadzorowanego uczenia
+wstępnego, lecz również w dość prosty i skuteczny sposób mogą usuwać szum z obrazów.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys/denoising.png}
+	\caption{Zaszumione obrazy (na górze) i ich rekonstrukcje (na dole)}
+	\zrodlo{\cite{geron}}
+	\label{fig:autoenkoder-denoising}
+\end{figure}
+
+\subsection{Autoenkodery rzadkie}
+
+\cite{geron}
+
+Innym ograniczeniem prowadzącym do skutecznego wydobywania cech jest rzadkość (ang. sparsity):
+przez dodanie odpowiedniego członu do funkcji kosztu autokoder zostaje zmuszony do zmniejszenia
+liczby aktywnych neuronów w warstwie kodowania. Możemy sprawić na przykład, żeby w warstwie
+kodującej występowało tylko 5\% znacząco aktywnych neuronów. W ten sposób wymuszamy na auto-
+koderze reprezentowanie każdego wejścia jako kombinacji niewielkiej liczby pobudzeń. Dzięki temu
+każdy neuron warstwy kodowania zazwyczaj uczy się wykrywać jakąś przydatną cechę (gdybyśmy
+wypowiadali w ciągu miesiąca tylko kilka słów, prawdopodobnie chcielibyśmy przekazywać za ich
+pomocą wartościowe informacje).
+Prostym rozwiązaniem okazuje się wprowadzenie sigmoidalnej funkcji aktywacji w warstwie kodowa-
+nia (co ogranicza wartości kodowań do zakresu od 0 do 1), wprowadzenie dużej warstwy kodowania
+(np. składającej się z 300 jednostek) i dodanie regularyzacji l 1 do pobudzeń warstwy kodowania
+(w dekoderze nie wprowadzamy żadnych zmian):
+\begin{verbatim}
+sparse_l1_encoder = keras.models.Sequential([
+keras.layers.Flatten(input_shape=[28, 28]),
+keras.layers.Dense(100, activation="selu"),
+keras.layers.Dense(300, activation="sigmoid"),
+keras.layers.ActivityRegularization(l1=1e-3)
+])
+sparse_l1_decoder = keras.models.Sequential([
+keras.layers.Dense(100, activation="selu", input_shape=[300]),
+keras.layers.Dense(28 * 28, activation="sigmoid"),
+keras.layers.Reshape([28, 28])
+])
+sparse_l1_ae = keras.models.Sequential([sparse_l1_encoder,
+sparse_l1_decoder])
+\end{verbatim}
+
+Taka warstwa ActivityRegularization zwraca jedynie swoje dane wejściowe, ale jako skutek uboczny
+dodaje funkcję straty uczenia równą sumie wartości bezwzględnych tychże sygnałów wejściowych
+(warstwa ta jest aktywna wyłącznie w fazie uczenia). Ewentualnie możesz usunąć warstwę Activity
+Regularization i wyznaczyć atrybut activity\_regularizer= keras.regularizers.l1(1e-3) w war-
+stwie poprzedzającej. Kara ta będzie zmuszała sieć neuronową do tworzenia kodowań o wartościach
+bliskich 0, ale jednocześnie model będzie również karany za niewłaściwe rekonstruowanie danych
+wejściowych, więc będzie musiał wyznaczać co najmniej kilka wartości niezerowych. Norma l 1
+sprawia, że sieć będzie przechowywała najważniejsze kodowania i eliminowała nieprzydatne z per-
+spektywy obrazu wejściowego (w przeciwieństwie do normy l 2 , która jedynie redukowałaby wszystkie
+kodowania).
+Innym rozwiązaniem, często dającym lepsze rezultaty, jest pomiar rzeczywistej rzadkości warstwy ko-
+dowania w każdym przebiegu uczenia i karanie modelu w sytuacji, gdy zmierzona rzadkość różni
+się od rzadkości docelowej. Robimy to, obliczając średnią aktywację każdego neuronu w tej war-
+stwie dla całej grupy próbek uczących. Rozmiar tej grupy nie może być zbyt mały, gdyż wyliczona
+wartość średniej nie będzie wtedy dokładna.
+Po uzyskaniu średniej wartości aktywacji każdego neuronu chcemy nałożyć karę na zbyt aktywne
+neurony poprzez dodanie funkcji straty rzadkości (ang. sparsity loss) do funkcji kosztu. Przykładowo
+jeśli zmierzymy średnią wartość aktywacji neuronu rzędu 0,3, ale aktywność docelowa powinna wyno-
+sić 0,1, musimy zmniejszyć jego aktywność. Jednym ze sposobów jest dodanie kwadratu błędu
+(0,3-0,1) 2 do funkcji kosztu, w praktyce jednak lepszym rozwiązaniem okazuje się wprowadzenie dy-
+wergencji Kullbacka-Leiblera (zob. rozdział 4.), której gradienty są znacznie większe niż w błędzie
+średniokwadratowym (rysunek 17.10).
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys/funkcja_straty_rzadkosci.png}
+	\caption{Funkcje straty rzadkości}
+	\zrodlo{\cite{geron}}
+	\label{fig:funkcja-straty-rzadkosci}
+\end{figure}
+
+Mając dwa dyskretne rozkłady prawdopodobieństwa P i Q, możemy obliczyć rozbieżność pomiędzy nimi $D_{KL}(P||Q)$ za pomocą równania 17.1. (dywergencja Kullbacka-Leiblera)
+
+$$D_{KL}(P||Q)=\sum_i P(i)\log \frac{P(i)}{Q(i)}$$
+
+W naszym przypadku chcemy zmierzyć rozbieżność pomiędzy docelowym prawdopodobieństwem p
+aktywacji neuronu w warstwie kodowania a rzeczywistym prawdopodobieństwem q (tzn. średnią
+aktywacją dla grupy przykładów uczących). Zatem dywergencja KL ulega uproszczeniu do postaci
+widocznej w równaniu 17.2. (Dywergencja KL pomiędzy docelową rzadkością p a rzeczywistą rzadkością q)
+
+$$D_{KL}(p||q)=p\log \frac{p}{q}+(1-p)\log \frac{1-p}{1-q}$$
+
+Po obliczeniu funkcji straty rzadkości dla każdego neuronu w warstwie kodowania wystarczy je zsu-
+mować i dodać wynik do funkcji kosztu. W celu regulowania względnej istotności funkcji straty
+rzadkości i funkcji straty rekonstrukcji możemy pomnożyć tę pierwszą przez hiperparametr wagi
+rzadkości. Jeżeli wartość wagi będzie za duża, model pozostanie blisko rzadkości docelowej, ale
+jednocześnie może nie być w stanie prawidłowo rekonstruować danych wejściowych, przez co okaże się bezużyteczny. Z kolei przy zbyt małej wartości wagi rzadkości model będzie ignorował cel rzadkości
+i nie nauczy się rozpoznawać przydatnych cech.
+
 
 
 

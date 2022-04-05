@@ -497,80 +497,40 @@ Na  rysunku \ref{fig:funkcje-aktywacji} przedstawiono popularne funkcje aktywacj
 
 \section{Sieci splotowe}
 
-Sieci splotowe, nazywane również \textbf{splotowymi sieciami neuronowymi} (ang. \emph{convolutional neural networks}, CNN), są rodzajem sieci neuronowych służących do przetwarzania danych o znanej topologii siatki. Przykładem takich danych są szeregi czasowe, które można uznać za jednowymiarową siatkę z próbkami w regularnych odstępach czasu, oraz dane graficzne, które można interpretować jako dwuwymiarową siatkę pikseli. Nazwa sieci splotowych pochodzi od wykorzystywanego przez te sieci działania matematycznego nazywanego \textbf{splotem} (konwolucją). Można powiedzieć, że sieci splotowe to po prostu sieci neuronowe, które w przynajmniej jednej z warstw zamiast ogólnego mnożenia macierzy wykorzystują splot \cite{goodfellow}.
+\textbf{Splotowe sieci neuronowe} (ang. \emph{convolutional neural networks}, CNN) są rodzajem sieci neuronowych służących do przetwarzania danych o znanej topologii siatki. Przykładem takich danych są szeregi czasowe, które można uznać za jednowymiarową siatkę z próbkami w regularnych odstępach czasu, oraz dane graficzne, które można interpretować jako dwuwymiarową siatkę pikseli. Nazwa sieci splotowych pochodzi od wykorzystywanego przez te sieci działania matematycznego nazywanego \textbf{splotem} (konwolucją). Można powiedzieć, że sieci splotowe to po prostu sieci neuronowe, które w przynajmniej jednej z warstw zamiast ogólnego mnożenia macierzy wykorzystują splot \cite{goodfellow}.
+Splotowe sieci neuronowe stanowią wynik badań nad korą wzrokową. Od lat 80-tych XX wieku są używane głównie rozpoznawania obrazów, w zagadnieniach takich jak klasyfikacja, detekcja obrazów, transfer stylu. Stanowią podstawę usług takich jak wyszukiwanie obrazu, inteligentne samochody, automatyczne systemy klasyfikowania filmów. Są skuteczne również w innych dziedzinach niż jedynie komputerowe widzenie - takie dziedziny to na przykład rozpoznawanie mowy (\emph{voice recognition}) oraz przetwarzanie języka naturalnego (\emph{Natural Language Processing, NLP}) \cite{geron}. 
+
+\subsection{Działanie kory wzrokowej}
+
+Ponieważ splotowe sieci neuronowe są silnie inspirowane działaniem biologicznej kory wzrokowej, to ten podrozdział zostanie poświęcony wyjaśnieniu jej działania. Na podstawie badań prowadzonych pod koniec lat 50-tych XX wieku \cite{hubel1} \cite{hubel2} wykazano, że neurony biologiczne w korze wzrokowej reagują na określone wzorce w niewielkich obszarach pola wzrokowego, zwanych \textbf{polami recepcyjnymi}, a w miarę przepływu sygnału wzrokowego przez kolejne moduły w mózgu neurony rozpoznają coraz bardziej skomplikowane wzorce wykrywane w coraz większych polach recepcyjnych.
+Wiele neuronów stanowiących korę wzrokową tworzy \textbf{lokalne pola recepcyjne}, reagujące jedynie na bodźce wzrokowe mieszczące się w określonym rejonie pola wzrokowego, przy czym lokalne pola recepcyjne poszczególnych neuronów mogą się na siebie nakładać. Takie pola recepcyjne łącznie tworzą całe pole wzrokowe. Dodatkowo badacze zauważyli, iż pewne neurony reagują wyłącznie na obrazy składające się z linii poziomych, lub innych linii ułożonych w konkretny sposób (dwa neurony mogą nawet mieć to samo pole recepcyjne, ale reagować na różne ułożenie linii). Badacze stwierdzili, że niektóre komórki nerwowe mają większe pola recepcyjne i wykrywają bardziej skomplikowane kształty. Takie neurony, odpowiedzialne za rozpoznawanie bardziej skomplikowanych kształtów, znajdują się na wyjściu neuronów reagujących na prostsze bodźce. Działanie neuronów biologicznych w korze wzrokowej, zgodnie z powyższym opisem, zostało zobrazowane na rysunku \ref{fig:kora-wzrokowa}.
 
 
-\cite{geron}
-
-Splotowe sieci neuronowe stanowią wynik badań nad korą wzrokową. Są używane głównie do rozpoznawania obrazów (od lat 80-tych XX w.).
-
-Zagadnienia rozpoznawania obrazu:
-\begin{itemize}
-	\item klasyfikacja
-	\item detekcja obrazów
-	\item transfer stylu
-\end{itemize}
-
-Neurony biologiczne w korze wzrokowej reagują na określone wzorce w niewielkich obszarach pola wzrokowego, zwanych polami recepcyjnymi; w miarę przepływu sygnału wzrokowego przez kolejne moduły w mózgu neurony rozpoznają coraz bardziej skomplikowane wzorce wykrywane w coraz większych polach recepcyjnych.
-
-Wiele neuronów tworzących korę wzrokową tworzą lokalne pola recepcyjne, reagujące jedynie na bodźce wzrokowe mieszczące się w określonym rejonie pola wzrokowego.
-
-Pola recepcyjne poszczególnych neuronów mogą się na siebie nakładać.
-
-Pola recepcyjne łącznie tworzą całe pole wzrokowe.
-
-Pewne neurony reagują wyłącznie na obrazy składające się z linii poziomych, lub innych linii ułożonych w konkretny sposób.
-
-Niektóre komórki nerwowe mają większe pola recepcyjne i wykrywają bardziej skomplikowane kształty.
-
-Neurony odpowiedzialne za rozpoznawanie bardziej skomplikowanych kształtów znajdują się na wyjściu neuronów reagujących na prostsze bodźce.
-
-\cite{geron}
-
-Splotowe (konwolucyjne) sieci neuronowe (ang. convolutional neural networks — CNN) stanowią
-wynik badań nad korą wzrokową i od lat 80. ubiegłego wieku są używane do rozpoznawania obrazów.
-W ciągu kilku ostatnich lat sieci CNN zdołały osiągnąć wyniki przekraczające ludzkie możliwości
-w pewnych skomplikowanych zadaniach wizualnych; stało się to możliwe dzięki wzrostowi mocy
-obliczeniowej, ilości dostępnych danych uczących i opisanym w rozdziale 11. sposobom uczenia
-sztucznych sieci neuronowych. Stanowią one podstawę usług wyszukiwania obrazów, samochodów
-inteligentnych, zautomatyzowanych systemów klasyfikowania filmów itd. Co więcej, splotowe
-sieci neuronowe nie ograniczają się wyłącznie do postrzegania obrazów: okazują się również skuteczne
-w innych zadaniach, takich jak rozpoznawanie mowy (ang. voice recognition) czy przetwarzanie
-języka naturalnego (ang. natural language processing — NLP).
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=\linewidth]{rys/kora_wzrokowa.png}
-	\caption{Neurony biologiczne w korze wzrokowej reagują na określone wzorce w niewielkich obszarach
-		pola wzrokowego, zwanych polami recepcyjnymi; w miarę przepływu sygnału wzrokowego przez kolejne
-		moduły w mózgu neurony rozpoznają coraz bardziej skomplikowane wzorce wykrywane w coraz większych
-		polach recepcyjnych}
+	\caption{Działanie neuronów biologicznych w korze wzrokowej}
 	\zrodlo{\cite{geron}}
 	\label{fig:kora-wzrokowa}
 \end{figure}
 
 
-Warstwy splotowe
-Najistotniejszym składnikiem sieci CNN jest warstwa splotowa (konwolucyjna; ang. convolutional
-layer) 6 : neurony w pierwszej warstwie splotowej nie są połączone z każdym pikselem obrazu wejścio-
-wego (w przeciwieństwie do sieci opisanych w poprzednich rozdziałach), lecz wyłącznie z pikselami
-znajdującymi się w ich polu recepcyjnym (rysunek 14.2). Z kolei każdy neuron w drugiej warstwie
-splotowej łączy się wyłącznie z neuronami znajdującymi się w niewielkim obszarze pierwszej war-
-stwy. Dzięki temu sieć może koncentrować się na ogólnych cechach w pierwszej warstwie ukrytej,
-następnie łączyć je w bardziej złożone kształty w drugiej warstwie ukrytej itd. Taka hierarchiczna
-struktura jest powszechnie spotykana na zdjęciach, co stanowi jedną z przyczyn tak dużej skuteczności
-sieci CNN w rozpoznawaniu obrazów.
+\subsection{Warstwy splotowe}
+
+Przejdziemy teraz do opisu najistotniejszej części sieci CNN, jaką jest warstwa splotowa (\emph{convolutional layer}). Na rysunku \ref{fig:warstwy-cnn} widoczny jest przykład warstw splotowych z prostokątnymi polami recepcyjnymi. W pierwszej warstwie splotowej, neurony nie są połączone z każdym pikselem obrazu wejściowego (w przeciwieństwie do opisanych wcześniej warstw gęstych), lecz jedynie z pikselami znajdującymi się w polu recepcyjnym danego neuronu. W kolejnej warstwie każdy neuron łączy się wyłącznie z neuronami z niewielkiego obszaru pierwszej warstwy. Dzięki temu sieć koncentruje się na pewnych cechach w pierwszej warstwie, a w drugiej warstwie może je łączyć w bardziej złożone kształty. Taka hierarchiczna struktura w naturalny sposób występuje na zdjęciach, co przyczyniło się do dużej skuteczności sieci splotowych w rozpoznawaniu obrazu.
+
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=\linewidth]{rys/warstwy_cnn.png}
-	\caption{Warstwy CNN z prostokątnymi lokalnymi polami recepcyjnymi}
+	\caption{Warstwy splotowe z prostokątnymi lokalnymi polami recepcyjnymi}
 	\zrodlo{\cite{geron}}
 	\label{fig:warstwy-cnn}
 \end{figure}
-Neuron znajdujący się w wierszu $i$ oraz kolumnie $j$ danej warstwy jest połączony z wyjściami neuro-
-nów poprzedniej warstwy zlokalizowanymi w rzędach od $i$ do $i+f_h -1$ i kolumnach od $j$ do $j+f_w -1$,
-gdzie $f_h$ i $f_w$ oznaczają, odpowiednio, wysokość i szerokość pola recepcyjnego (rysunek 14.3). W celu
-uzyskania takich samych wymiarów każdej warstwy najczęściej są dodawane zera wokół wejść, co zo-
-stało pokazane na rysunku 14.3. Proces ten nazywamy uzupełnianiem zerami (ang. zero padding).
+
+Neuron znajdujący się w wierszu $i$ oraz kolumnie $j$ danej warstwy jest połączony z wyjściami neuronów poprzedniej warstwy zlokalizowanymi w rzędach od $i$ do $i+f_h -1$ i kolumnach od $j$ do $j+f_w -1$,
+gdzie $f_h$ i $f_w$ oznaczają, odpowiednio, wysokość i szerokość pola recepcyjnego (rysunek \ref{fig:zero-padding}). W celu
+uzyskania takich samych wymiarów każdej warstwy najczęściej są dodawane zera wokół wejść, co zostało pokazane na rysunku \ref{fig:zero-padding}. Proces ten nazywamy \textbf{uzupełnianiem zerami} (ang. zero padding).
+
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=\linewidth]{rys/zero_padding.png}
@@ -578,61 +538,52 @@ stało pokazane na rysunku 14.3. Proces ten nazywamy uzupełnianiem zerami (ang.
 	\zrodlo{\cite{geron}}
 	\label{fig:zero-padding}
 \end{figure}
-Możliwe jest również łączenie bardzo dużej warstwy wejściowej ze znacznie mniejszą kolejną warstwą
-poprzez rozdzielanie pól recepcyjnych, tak jak zaprezentowano na rysunku 14.4. Rozwiązanie to
-zmniejsza drastycznie złożoność obliczeniową modelu. Odległość pomiędzy dwoma kolejnymi polami
-recepcyjnymi nosi nazwę kroku (ang. stride). Na widocznym schemacie warstwa wejściowa o wymia-
-rach 5×7 (plus uzupełnianie zerami) łączy się z warstwą o rozmiarze 3×4 za pomocą pól recepcyj-
-nych będących kwadratami 3×3 i kroku o wartości 2 (w omawianym przykładzie krok jest taki sam
-w obydwu wymiarach, ale nie jest to wcale regułą). Neuron zlokalizowany w rzędzie $i$ oraz kolumnie $j$
-górnej warstwy łączy się z wyjściami neuronów dolnej warstwy mieszczącymi się w rzędach od
-$i\times s_h$ do $i\times s_h +f_h -1$ i w kolumnach od $j\times s_w$ do $j \times s_w +f_w -1$, gdzie $s_h$ i $s_w$ definiują wartości kroków od-
-powiednio w kolumnach i rzędach.
 
-Filtry
+Możliwe jest również łączenie bardzo dużej warstwy wejściowej ze znacznie mniejszą kolejną warstwą
+poprzez rozdzielanie pól recepcyjnych, tak jak zaprezentowano na rysunku \ref{fig:stride}. Rozwiązanie to
+zmniejsza drastycznie złożoność obliczeniową modelu. Odległość pomiędzy dwoma kolejnymi polami
+recepcyjnymi nosi nazwę \textbf{kroku} (ang. stride). Na widocznym schemacie warstwa wejściowa o wymiarach 5×7 (plus uzupełnianie zerami) łączy się z warstwą o rozmiarze 3×4 za pomocą pól recepcyjnych będących kwadratami 3×3 i kroku o wartości 2 (w omawianym przykładzie krok jest taki sam w obydwu wymiarach, ale nie jest to wcale regułą). Neuron zlokalizowany w rzędzie $i$ oraz kolumnie $j$ górnej warstwy łączy się z wyjściami neuronów dolnej warstwy mieszczącymi się w rzędach od $i\times s_h$ do $i\times s_h +f_h -1$ i w kolumnach od $j\times s_w$ do $j \times s_w +f_w -1$, gdzie $s_h$ i $s_w$ definiują wartości kroków odpowiednio w kolumnach i rzędach.
+
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.9\linewidth]{rys/cnn_stride.png}
+	\caption{Warstwa splotowa z krokiem o długości 2}
+	\zrodlo{\cite{geron}}
+	\label{fig:stride}
+\end{figure}
+
+\subsection{Filtry}
+
 Wagi neuronu mogą być przedstawiane jako niewielki obraz o rozmiarze pola recepcyjnego. Na
-przykład na rysunku 14.5 widzimy dwa możliwe zbiory wag, tak zwane filtry (lub jądra splotowe;
-ang. convolution kernels). Pierwszy filtr jest symbolizowany jako czarny kwadrat z białą pionową
+przykład na rysunku \ref{fig:filtry} widzimy dwa możliwe zbiory wag, tak zwane \textbf{filtry} (lub \textbf{jądra splotowe}; ang. \emph{convolution kernels}). Pierwszy filtr jest symbolizowany jako czarny kwadrat z białą pionową
 linią przechodzącą przez jego środek (jest to macierz o wymiarach 7×7 wypełniona zerami oprócz
 środkowej kolumny, która zawiera jedynki); neurony zawierające te wagi będą ignorować wszystkie
 elementy w polu recepcyjnym oprócz znajdujących się w środkowej pionowej linii (dane wejściowe
 znajdujące się poza tą linią będą przemnażane przez 0). Drugi filtr wygląda podobnie; różnica
 polega na tym, że środkowa linia jest ułożona poziomo. Także w tym wypadku będą brane pod uwagę
 jedynie dane wejściowe znajdujące się w tej linii.
+
 Jeśli wszystkie neurony w danej warstwie będą korzystać z tego samego filtra „pionowego” (i takiego
-samego członu obciążenia), a my wczytamy do sieci obraz zaprezentowany na dole rysunku 14.5,
+samego członu obciążenia), a my wczytamy do sieci obraz zaprezentowany na dole rysunku \ref{fig:filtry},
 to uzyskamy obraz widoczny w lewym górnym rogu rysunku. Zauważ, że po zastosowaniu tego filtru
 pionowe białe linie stają się wyraźniej widoczne, natomiast pozostała część obrazu zostaje rozmazana.
-Na zasadzie analogii otrzymujemy obraz widoczny w prawym górnym rogu rysunku po zastosowa-
-niu filtru „poziomego”; teraz z kolei białe poziome linie zostają wyostrzone, a reszta obrazu ulega
-zamazaniu. Zatem warstwa wypełniona neuronami wykorzystującymi ten sam filtr daje nam mapę
-cech (ang. feature map), dzięki której możemy dostrzec elementy najbardziej przypominające dany
-filtr. Nie musisz oczywiście definiować filtrów własnoręcznie — sieć CNN w czasie uczenia wy-
-szukuje filtry najbardziej przydatne do danego zadania i uczy się łączyć je w bardziej złożone
-wzorce.
+Na zasadzie analogii otrzymujemy obraz widoczny w prawym górnym rogu rysunku po zastosowaniu filtru „poziomego”; teraz z kolei białe poziome linie zostają wyostrzone, a reszta obrazu ulega zamazaniu. Zatem warstwa wypełniona neuronami wykorzystującymi ten sam filtr daje nam \textbf{mapę cech} (ang. \emph{feature map}), dzięki której możemy dostrzec elementy najbardziej przypominające dany filtr. Sieć CNN w czasie uczenia wyszukuje filtry najbardziej przydatne do danego zadania i uczy się łączyć je w bardziej złożone wzorce.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.9\linewidth]{rys/cnn_filtry.png}
+	\caption{Uzyskiwanie dwóch map cech za pomocą dwóch różnych filtrów}
+	\zrodlo{\cite{geron}}
+	\label{fig:filtry}
+\end{figure}
 
 
-Stosy map cech
-Do tej pory dla uproszczenia przedstawialiśmy każdą warstwę splotową w postaci cienkiej, dwuwymia-
-rowej warstwy, ale w rzeczywistości składa się ona z kilku map cech o identycznych rozmiarach,
-dlatego trójwymiarowe odwzorowanie jest bliższe rzeczywistości (rysunek 14.6). W zakresie jed-
-nej mapy cech każdy neuron jest przydzielony do jednego piksela, a wszystkie tworzące ją neurony
-współdzielą te same parametry (wagi i człon obciążenia). Neurony w innych mapach cech mają od-
-mienne wartości parametrów. Pole recepcyjne neuronu nie ulega zmianie, ale „przebiega” przez
+\subsection{Stosy map cech}
+
+Do tej pory dla uproszczenia przedstawialiśmy każdą warstwę splotową w postaci cienkiej, dwuwymiarowej warstwy, ale w rzeczywistości składa się ona z kilku map cech o identycznych rozmiarach, dlatego trójwymiarowe odwzorowanie jest bliższe rzeczywistości (rysunek \ref{fig:warstwy-kanaly}). W zakresie jednej mapy cech każdy neuron jest przydzielony do jednego piksela, a wszystkie tworzące ją neurony współdzielą te same parametry (wagi i człon obciążenia). Neurony w innych mapach cech mają odmienne wartości parametrów. Pole recepcyjne neuronu nie ulega zmianie, ale „przebiega” przez
 wszystkie mapy cech poprzednich warstw. Krótko mówiąc, warstwa splotowa równocześnie stosuje
 różne filtry na wejściach, dzięki czemu jest w stanie wykrywać wiele cech w dowolnym obszarze obrazu.
-
-Co więcej, obrazy wejściowe także składają się z kilku warstw podrzędnych, po jednej na każdy kanał
-barw (ang. color channel). Standardowo występują trzy kanały barw — czerwony, zielony i niebieski
-(ang. red, green, blue — RGB). Obrazy czarno-białe (w odcieniach szarości) zawierają tylko jeden
-kanał, ale istnieją też takie zdjęcia, które mogą mieć ich znacznie więcej — np. fotografie satelitarne
-utrwalające dodatkowe częstotliwości fal elektromagnetycznych (takie jak podczerwień).
-
-W szczególności neuron zlokalizowany w rzędzie $i$ oraz kolumnie $j$ mapy cech $k$ w danej warstwie
-splotowej $l$ jest połączony z neuronami wcześniejszej warstwy $l-1$ umieszczonymi w rzędach od $i\times s_h$
-do $i\times s_h +f_h -1$ i kolumnach od $j\times s$ w do $j\times s_w +f_w -1$ we wszystkich mapach cech (warstwy $l-1$). Zwróć
-uwagę, że wszystkie neurony znajdujące się w tym samym rzędzie $i$ oraz kolumnie $j$, ale w innych
-mapach cech są połączone z wyjściami dokładnie tych samych neuronów poprzedniej warstwy.
 
 \begin{figure}[!h]
 	\centering
@@ -642,10 +593,20 @@ mapach cech są połączone z wyjściami dokładnie tych samych neuronów poprze
 	\label{fig:warstwy-kanaly}
 \end{figure}
 
-Powyższy opis został podsumowany w równaniu 14.1: widoczny duży wzór matematyczny służy
-do obliczania wyniku danego neuronu w warstwie splotowej. Z powodu dużej liczby indeksów
-równanie to nie wygląda zbyt elegancko, ale za jego pomocą jesteśmy w stanie uzyskać sumę ważoną
-wszystkich danych wejściowych wraz z członem obciążenia.
+Co więcej, obrazy wejściowe także składają się z kilku warstw podrzędnych, po jednej na każdy \textbf{kanał
+barw} (ang. \emph{color channel}). Standardowo występują trzy kanały barw — czerwony, zielony i niebieski
+(ang. red, green, blue — RGB). Obrazy czarno-białe (w odcieniach szarości) zawierają tylko jeden
+kanał, ale istnieją też takie zdjęcia, które mogą mieć ich znacznie więcej — np. fotografie satelitarne
+utrwalające dodatkowe częstotliwości fal elektromagnetycznych (takie jak podczerwień).
+
+W szczególności neuron zlokalizowany w rzędzie $i$ oraz kolumnie $j$ mapy cech $k$ w danej warstwie
+splotowej $l$ jest połączony z neuronami wcześniejszej warstwy $l-1$ umieszczonymi w rzędach od $i\times s_h$
+do $i\times s_h +f_h -1$ i kolumnach od $j\times s$ w do $j\times s_w +f_w -1$ we wszystkich mapach cech (warstwy $l-1$). Wszystkie neurony znajdujące się w tym samym rzędzie $i$ oraz kolumnie $j$, ale w innych
+mapach cech są połączone z wyjściami dokładnie tych samych neuronów poprzedniej warstwy.
+
+
+
+Powyższy opis został podsumowany następującym wzorem, służącym do obliczania wyniku danego neuronu w warstwie splotowej:
 $$z_{i,j,k}=b_k\sum_{u=0}^{f_h-1}\sum_{v=0}^{f_w-1}\sum_{k'=0}^{f_{n'}-1}x_{i', j', k'} \cdot w_{u,v,k', k},\text{~~~gdzie }\begin{cases}
 i'=i \times s_h+u\\
 j'=j \times s_w+v
@@ -666,8 +627,10 @@ W tym równaniu:
 \end{itemize}
 
 
+
+\subsection{Warstwa łącząca}
+
 Przejdźmy teraz do drugiego elementu budulcowego sieci CNN — warstwy łączącej.
-Warstwa łącząca
 Gdy już wiemy, jak działa warstwa splotowa, zrozumienie mechanizmu kryjącego się za warstwami
 łączącymi (ang. pooling layers) nie powinno stanowić problemu. Ich celem jest podpróbkowanie
 (ang. subsample; tj. zmniejszenie) obrazu wejściowego w celu zredukowania obciążenia obliczeniowego,
@@ -1047,6 +1010,21 @@ wstępnego, lecz również w dość prosty i skuteczny sposób mogą usuwać szu
 	\label{fig:autoenkoder-denoising}
 \end{figure}
 
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys/denoising_autoencoder.png}
+	\caption{The structure of the denoising autoencoder. Here, the input to the autoen-
+		coder is the noisy data, whereas the expected target is the original noise-free data. The
+		network learns to recognize and remove the noise in the input data before generating the
+		output. The autoencoder does not see the original, noise-free image at all, it only sees the
+		image that has undergone some corruption. This corruption process is flexible; it can be
+		based on masking noise, Gaussian noise, salt-and-pepper noise (shown in the example), or
+		even prior knowledge.}
+	\zrodlo{\cite{pinaya}}
+	\label{fig:denoising-structure}
+\end{figure}
+
+
 \subsection{Autoenkodery rzadkie}
 
 \cite{geron}
@@ -1332,9 +1310,15 @@ Opisany autoenkoder zostanie wyuczony na wygenerowanym zbiorze trójwymiarowych 
 
 \bibitem{goodfellow} Goodfellow I., Bengio Y., Courville A. (2018), \emph{Deep Learning. Systemy uczące się}, PWN, Warszawa 
 
+\bibitem{hubel1} Hubel D. H., \emph{Single Unit Activity in  Striate Cortex of Unrestrained Cats}, J. Physiol. (1959) 147, 226-238
+
+\bibitem{hubel2} Hubel D. H., Wiesel T. N., \emph{Receptive Fields of Single Neurones in the Cat's Striate Cortex}, J. Physiol., (1959), 148, 574-591
+
 \bibitem{illustrated} Krohn J., Beyleveld G., Bassens A., \emph{Uczenie głębokie i sztuczna inteligencja. Interaktywny przewodnik ilustrowany}, Helion 2022
 
 \bibitem{osinga} Osinga D. (2019) \emph{Deep Learning. Receptury}, Helion SA
+
+\bibitem{pinaya} Pinaya W. H. L., Vieira S., Garcia-Dias R., Mechelli A., \emph{Machine Learning. Methods and Applications to Brain Disorders}, Academic Press,2020
 
 \bibitem{skansi} Skansi S. (2018) \emph{Introduction to Deep Learning. From Logical Calculus to Artificial Intelligence}, Springer International Publishing
 

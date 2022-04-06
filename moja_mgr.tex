@@ -531,6 +531,10 @@ Neuron znajdujący się w wierszu $i$ oraz kolumnie $j$ danej warstwy jest poł�
 gdzie $f_h$ i $f_w$ oznaczają, odpowiednio, wysokość i szerokość pola recepcyjnego (rysunek \ref{fig:zero-padding}). W celu
 uzyskania takich samych wymiarów każdej warstwy najczęściej są dodawane zera wokół wejść, co zostało pokazane na rysunku \ref{fig:zero-padding}. Proces ten nazywamy \textbf{uzupełnianiem zerami} (ang. zero padding).
 
+\begin{uwaga}[Dopełnianie]
+	Dopełnianie (padding) jest ściśle związane z parametrem kroku (który zostanie opisany w kolejnym akapicie). Zapewnia poprawność obliczeń w warstwie konwolucyjnej \cite{illustrated}.
+\end{uwaga}
+
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=\linewidth]{rys/zero_padding.png}
@@ -552,6 +556,10 @@ recepcyjnymi nosi nazwę \textbf{kroku} (ang. stride). Na widocznym schemacie wa
 	\zrodlo{\cite{geron}}
 	\label{fig:stride}
 \end{figure}
+
+\begin{uwaga}[Długość kroku]
+	Długość kroku (stride length) - oznacza odległość, o jaką jądro przesuwa się po obrazie. Często stosowaną wielkością jest długość jednego piksela. Często wybieraną długością są również dwa piksele, rzadziej trzy. Dłuższe kroki nie są stosowane, ponieważ jądro może wtedy pomijać obszary obrazu potencjalnie wartościowe dla modelu. Z drugiej strony, im dłuższy krok, tym większa szybkość uczenia się modelu, ponieważ jest mniej obliczeń do wykonania. Trzeba znajdować kompromis między tymi efektami \cite{illustrated}.
+\end{uwaga}
 
 \subsection{Filtry}
 
@@ -578,6 +586,9 @@ Na zasadzie analogii otrzymujemy obraz widoczny w prawym górnym rogu rysunku po
 	\label{fig:filtry}
 \end{figure}
 
+\begin{uwaga}[Wielkość jądra]
+	Jądro (zwane również filtrem lub polem receptywnym) typowo ma wysokość i szerokość trzech pikseli. Rozmiar ten okazał się optymalny w szerokim zakresie zastosowań widzenia maszynowego w nowoczesnych sieciach konwolucyjnych. Popularna jest również wielkość 5x5 pikseli, a maksymalny stosowany rozmiar to 7x7 pikseli. Jeśli jądro jest zbyt duże w stosunku do obrazu, wtedy w polu receptywnym pojawia się zbyt wiele cech i warstwa konwolucyjna nie jest w stanie się skutecznie uczyć. Jeżeli jądro jest zbyt małe, np. ma wymiary 2x2 piksele, nie jest w stanie dopasować się do żadnej struktury, przez co jest bezużyteczne \cite{illustrated}.
+\end{uwaga}
 
 \subsection{Stosy map cech}
 
@@ -630,25 +641,16 @@ W tym równaniu:
 
 \subsection{Warstwa łącząca}
 
-Przejdźmy teraz do drugiego elementu budulcowego sieci CNN — warstwy łączącej.
-Gdy już wiemy, jak działa warstwa splotowa, zrozumienie mechanizmu kryjącego się za warstwami
-łączącymi (ang. pooling layers) nie powinno stanowić problemu. Ich celem jest podpróbkowanie
+Przejdźmy teraz do drugiego elementu budulcowego sieci CNN — \textbf{warstwy łączącej}, zwanej czasem redukującą (ang. pooling layer). Warstwa konwolucyjna może zawierać dowolną liczbę jąder, z których każde generuje mapę aktywacji. Zatem wyjście warstwy konwolucyjnej jest trójwymiarowa tablica aktywacji, której głębokość jest równa liczbie filtrów. Warstwa redukująca zmniejsza przestrzenny wymiar mapy aktywacji, pozostawiając jej głębokość bez zmian \cite{illustrated}. Jej celem jest podpróbkowanie
 (ang. subsample; tj. zmniejszenie) obrazu wejściowego w celu zredukowania obciążenia obliczeniowego,
 wykorzystania pamięci i liczby parametrów (a tym samym ograniczenia ryzyka przetrenowania).
 Podobnie jak w przypadku warstw splotowych, każdy neuron stanowiący część warstwy łączącej
 łączy się z wyjściami określonej liczby neuronów warstwy poprzedniej, mieszczącej się w obszarze
 niewielkiego, prostokątnego pola recepcyjnego. Podobnie jak wcześniej, musimy definiować tu
 rozmiar tego pola, wartość kroku, rodzaj uzupełniania zerami itd. Jednakże warstwa łącząca nie zawiera
-żadnych wag; jej jedynym zadaniem jest gromadzenie danych wejściowych za pomocą jakiejś funk-
-cji agregacyjnej, np. maksymalizującej lub uśredniającej. Na rysunku 14.8 widzimy najpopularniejszy
-rodzaj — maksymalizującą warstwę łączącą (ang. max pooling layer). W tym przykładzie korzystamy
-z jądra łączącego 9 (ang. pooling kernel) o rozmiarze 2×2, kroku o wartości 2 i z pominięciem uzupeł-
-niania zerami. Zwróć uwagę, że jedynie maksymalna wartość z każdego jądra zostaje przekazana do
-następnej warstwy natomiast pozostałe wartości wejściowe zostają odrzucone. Na przykład w lewym
-dolnym polu recepcyjnym na rysunku 14.8 widzimy wartości wejściowe 1, 5, 3, 2, zatem tylko wartość
-maksymalna (5) zostanie przekazana do następnej warstwy. Z powodu kroku równego 2 obraz wyj-
-ściowy ma szerokość i wysokość o połowę mniejsze w porównaniu do obrazu wejściowego (zaokrą-
-glamy tu w dół, ponieważ nie korzystamy z uzupełniania zerami).
+żadnych wag; jej jedynym zadaniem jest gromadzenie danych wejściowych za pomocą jakiejś funkcji agregacyjnej, np. maksymalizującej lub uśredniającej. Na rysunku \ref{fig:max-pooling-layer} widzimy najpopularniejszy
+rodzaj — \textbf{maksymalizującą warstwę łączącą} (ang. max pooling layer). W tym przykładzie korzystamy
+z \textbf{jądra łączącego}  (ang. pooling kernel) o rozmiarze 2×2, kroku o wartości 2 i z pominięciem uzupełniania zerami. Jedynie maksymalna wartość z każdego jądra zostaje przekazana do następnej warstwy natomiast pozostałe wartości wejściowe zostają odrzucone. Na przykład w lewym dolnym polu recepcyjnym na rysunku \ref{fig:max-pooling-layer} widzimy wartości wejściowe 1, 5, 3, 2, zatem tylko wartość maksymalna, czyli 5, zostanie przekazana do następnej warstwy. Z powodu kroku równego 2 obraz wyjściowy ma szerokość i wysokość o połowę mniejsze w porównaniu do obrazu wejściowego (zaokrąglamy tu w dół, ponieważ nie korzystamy z uzupełniania zerami).
 
 \begin{figure}[!h]
 	\centering
@@ -657,20 +659,27 @@ glamy tu w dół, ponieważ nie korzystamy z uzupełniania zerami).
 	\zrodlo{\cite{geron}}
 	\label{fig:max-pooling-layer}
 \end{figure}
-Oprócz ograniczania liczby obliczeń, zużycia pamięci i liczby parametrów maksymalizująca war-
-stwa łącząca wprowadza także pewien stopień niezmienniczości w stosunku do drobnych prze-
-sunięć, co widać na rysunku 14.9. Zakładamy tu, że piksele jasne mają mniejszą wartość od pikseli
+
+\begin{uwaga}[Parametry warstwy redukującej]
+	 Filtr w warstwie redukującej ma zazwyczaj wymiary 2x2 piksele, a krok ma długość dwóch pikseli. W takim wypadku filtr w każdej pozycji przetwarza cztery wartości aktywacji, wybiera największą i w efekcie czterokrotnie redukuje liczbę aktywacji \cite{illustrated}.
+\end{uwaga}
+
+\newpage
+
+Na rysunku \ref{fig:max-polling} widoczne jest działanie maksymalizującej warstwy redukującej na mapie aktywacji o wymiarze 4x4. Filtr przesuwa się nad danymi wejściowymi od lewej do prawej, od góry do dołu, tak jak w warstwie konwolucyjnej, i w każdej zajmowanej pozycji przeprowadza operację redukcji danych. W tym przykładzie filtr i krok mają rozmiar 2x2. Skutkuje to otrzymaniem mapy cztery razy mniejszej niż oryginalna.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys/max-polling.png}
+	\caption{Warstwa \emph{max-pooling} z filtrem i krokiem rozmiaru 2x2, zastosowana do mapy aktywacji o rozmiarze 4x4 (widoczna po lewej stronie) skutkuje uzyskaniem mapy czterokrotnie mniejszej niż oryginalna}
+	\zrodlo{\cite{illustrated}}
+	\label{fig:max-polling}
+\end{figure}
+
+Oprócz ograniczania liczby obliczeń, zużycia pamięci i liczby parametrów maksymalizująca warstwa łącząca wprowadza także pewien stopień \textbf{niezmienniczości} w stosunku do drobnych przesunięć, co widać na rysunku \ref{fig:niezmienniczosc-pooling}. Zakładamy tu, że piksele jasne mają mniejszą wartość od pikseli
 ciemnych, trzy obrazy (A, B i C) przechodzą przez maksymalizującą warstwę łączącą o jądrze 2×2
-i kroku równym 2. Obrazy B i C wyglądają tak samo jak obraz A, ale są przesunięte o, odpowied-
-nio, jeden i dwa piksele w prawo. Jak widać, rezultaty wygenerowane w maksymalizującej warstwie
-łączącej z obrazów A i B są identyczne. Na tym polega niezmienniczość przesunięć (ang. translation
-invariance). W przypadku obrazu C wynik jest odmienny: jest on przesunięty o jeden piksel w prawo
-(nadal jednak pozostaje niezmieniony w mniej więcej 75%). Poprzez wstawianie maksymalizują-
-cej warstwy łączącej co kilka warstw sieci CNN możliwe jest uzyskanie ograniczonej niezmienni-
-czości przesunięć w większej skali. Ponadto warstwa ta zapewnia niewielki stopień niezmienni-
-czości rotacyjnej i drobną niezmienniczość skalowania. Tego typu niezmienniczość (mimo że jest
-ograniczona) przydaje się wszędzie tam, gdzie prognozy nie powinny być zależne od tych szcze-
-gółów, na przykład w zadaniach klasyfikacji.
+i kroku równym 2. Obrazy B i C wyglądają tak samo jak obraz A, ale są przesunięte o, odpowiednio, jeden i dwa piksele w prawo. Jak widać, rezultaty wygenerowane w maksymalizującej warstwie łączącej z obrazów A i B są identyczne. Na tym polega \textbf{niezmienniczość przesunięć} (ang. translation invariance). W przypadku obrazu C wynik jest odmienny: jest on przesunięty o jeden piksel w prawo (nadal jednak pozostaje niezmieniony w mniej więcej 75\%). Poprzez wstawianie maksymalizującej warstwy łączącej co kilka warstw sieci CNN możliwe jest uzyskanie ograniczonej niezmienniczości przesunięć w większej skali. Ponadto warstwa ta zapewnia niewielki stopień niezmienniczości rotacyjnej i drobną niezmienniczość skalowania. Tego typu niezmienniczość (mimo że jest ograniczona) przydaje się wszędzie tam, gdzie prognozy nie powinny być zależne od tych szczegółów, na przykład w zadaniach klasyfikacji.
+
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=\linewidth]{rys/niezmienniczosc_pooling.png}
@@ -678,20 +687,21 @@ gółów, na przykład w zadaniach klasyfikacji.
 	\zrodlo{\cite{geron}}
 	\label{fig:niezmienniczosc-pooling}
 \end{figure}
+
+
+
 Jednak maksymalizująca warstwa łącząca jest niepozbawiona również wad. Przede wszystkim jest
 ona bardzo niszczycielska: nawet w przypadku niewielkiego jądra o rozmiarze 2×2 i kroku o wartości 2
 dane wyjściowe będą dwukrotnie mniejsze w każdym kierunku (zatem obszar obrazu będzie
-zmniejszony czterokrotnie), co oznacza porzucenie 75% wartości wejściowych. Z kolei w pewnych
-zastosowaniach niezmienniczość jest niepożądana, dajmy na to w segmentacji semantycznej (zadaniu
-klasyfikowania każdego piksela obrazu zgodnie z jego przynależnością do danego obiektu; później
-wrócimy do tego zagadnienia): jest oczywiste, że jeżeli obraz wejściowy zostanie przesunięty o jeden
-piksel w prawo, to wynik również powinien być przesunięty w taki sam sposób. Wówczas celem staje
-się ekwiwariancja (ang. equivariance), a nie niezmienniczość: mała zmiana w sygnale wejściowym
+zmniejszony czterokrotnie), co oznacza porzucenie 75\% wartości wejściowych. Z kolei w pewnych
+zastosowaniach niezmienniczość jest niepożądana, na przykład w segmentacji semantycznej (zadaniu
+klasyfikowania każdego piksela obrazu zgodnie z jego przynależnością do danego obiektu): jest oczywiste, że jeżeli obraz wejściowy zostanie przesunięty o jeden piksel w prawo, to wynik również powinien być przesunięty w taki sam sposób. Wówczas celem staje się \textbf{ekwiwariancja} (ang. equivariance), a nie niezmienniczość: mała zmiana w sygnale wejściowym
 powinna prowadzić do powiązanej z nią niewielkiej zmiany w sygnale wyjściowym.
 
+Podobnie do maksymalizującej warstwy łączącej jest zdefiniowana \textbf{uśredniająca warstwa łącząca} (average pooling layer), która zamiast maksimum używa średniej. Jest ona rzadziej wybierana w zastosowaniach niż warstwa maksymalizująca, z powodu słabszej wydajności. Obliczanie średniej zazwyczaj powoduje mniejszą utratę informacji niż obliczanie maksimum, ale za to warstwa maksymalizująca zachowuje wyłącznie najistotniejsze cechy i ignoruje te mniej ważne, dlatego kolejne warstwy otrzymują coraz czystszy sygnał.
 
 Ostatnim rodzajem warstwy łączącej często spotykanym we współczesnych architekturach jest
-globalna uśredniająca warstwa łącząca (ang. global average pooling layer). Mechanizm jej działania
+\textbf{globalna uśredniająca warstwa łącząca} (ang. global average pooling layer). Mechanizm jej działania
 jest całkiem odmienny: oblicza ona jedynie średnią każdej mapy cech (przypomina to działanie
 uśredniającej warstwy łączącej, w której jądro ma takie same wymiary przestrzenne jak dane
 wejściowe). Oznacza to, że generuje ona na wyjściu pojedynczą wartość na każdą mapę cech
@@ -699,37 +709,9 @@ i na każdy przykład. Jest to oczywiście rozwiązanie skrajnie destrukcyjne (w
 zawartych w mapie cech zostaje utraconych), ale, jak przekonasz się w dalszej części rozdziału,
 bywa przydatne na wyjściu modelu.
 
-\subsection{Hiperparametry filtru konwolucyjnego}
 
-\cite{illustrated}
+	
 
-Warstwy konwolucyjne w przeciwieństwie do zagęszczonych, nie są w pełni połączone. Oznacza to, że w pierwszej warstwie ukrytej nie są wiązane wagi wszystkich pikseli ze wszystkimi neuronami. Zamiast tego stosowanych jest kilka wymienionych niżej hiperparametrów określających liczbę wag i odchyleń związanych z daną warstwą konwolucyjną:
-\begin{itemize}
-	\item wielkość jądra (kernel size) - jądro (zwane również filtrem lub polem receptywnym) typowo ma wysokość i szerokość trzech pikseli. Rozmiar ten okazał się optymalny w szerokim zakresie zastosowań widzenia maszynowego w nowoczesnych sieciach konwolucyjnych. Popularna jest również wielkość 5x5 pikseli, a maksymalny stosowany rozmiar to 7x7 pikseli. Jeśli jądro jest zbyt duże w stosunku do obrazu, wtedy w polu receptywnym pojawia się zbyt wiele cech i warstwa konwolucyjna nie jest w stanie się skutecznie uczyć. Jeżeli jądro jest zbyt małe, np. ma wymiary 2x2 piksele, nie jest w stanie dopasować się do żadnej struktury, przez co jest bezużyteczne.
-	
-	\item długość kroku (stride length) - oznacza odległość, o jaką jądro przesuwa się po obrazie. Często stosowaną wielkością jest długość jednego piksela. Często wybieraną długością są również dwa piksele, rzadziej trzy. Dłuższe kroki nie są stosowane, ponieważ jądro może wtedy pomijać obszary obrazu potencjalnie wartościowe dla modelu. Z drugiej strony, im dłuższy krok, tym większa szybkość uczenia się modelu, ponieważ jest mniej obliczeń do wykonania. Trzeba znajdować kompromis między tymi efektami.
-	
-	\item dopełnienie (padding) - jest ściśle związane z długością kroku. Zapewnia poprawność obliczeń w warstwie konwolucyjnej.
-	
-\end{itemize}	
-	
-	\subsection{Warstwy redukujące}
-	
-	\cite{illustrated}
-	
-	Warstwy konwolucyjne często współpracują z innego typu warstwami, stanowiącymi fundament sieci neuronowych i widzenia maszynowego. Są to warstwy redukujące (pooling layers), których zadaniem jest zmniejszanie ogólnej liczby parametrów sieci, redukowanie złożoności, przyspieszanie obliczeń i zapobieganie nadmiernemu dopasowaniu modelu.
-	
-	Warstwa konwolucyjna może zawierać dowolną liczbę jąder, z których każde generuje mapę aktywacji. Zatem wyjście warstwy konwolucyjnej jest trójwymiarowa tablica aktywacji, której głębokość jest równa liczbie filtrów. Warstwa redukująca zmniejsza przestrzenny wymiar mapy aktywacji, pozostawiając jej głębokość bez zmian.
-	
-	Z warstwą redukującą, podobnie jak z konwolucyjną, jest związany filtr i długość kroku. Filtr przesuwa się nad danymi wejściowymi, tak jak w warstwie konwolucyjnej, i w każdej zajmowanej pozycji przeprowadza operację redukcji danych. Najczęściej jest to wybieranie największej wartości, dlatego taka warstwa jest również określana mianem maksymalnie redukującej (max-pooling layer). Z całego pola receptywnego jest wybierana największa wartość (maksymalna aktywacja), a pozostałe wartości są odrzucane. Filtr w warstwie redukującej ma zazwyczaj wymiary 2x2 piksele, a krok ma długość dwóch pikseli. W takim wypadku filtr w każdej pozycji przetwarza cztery wartości aktywacji, wybiera największą i w efekcie czterokrotnie redukuje liczbę aktywacji. Ponieważ operacja redukcji jest wykonywana niezależnie w każdym wycinku trójwymiarowej tablicy, mapa aktywacji o wymiarach 28x28 elementów i głębokości 16 wycinków jest redukowana do tablicy 14x14 elementów. Zachowywana jest jednak jej pełna głębokość 16 wycinków.
-	
-	\begin{figure}[!h]
-		\centering
-		\includegraphics[width=\linewidth]{rys/max-polling.png}
-		\caption{Max polling}
-		\zrodlo{\cite{illustrated}}
-		\label{fig:max-polling}
-	\end{figure}
 	
 \section{Czym jest autoenkoder}
 
@@ -1318,7 +1300,8 @@ Opisany autoenkoder zostanie wyuczony na wygenerowanym zbiorze trójwymiarowych 
 
 \bibitem{osinga} Osinga D. (2019) \emph{Deep Learning. Receptury}, Helion SA
 
-\bibitem{pinaya} Pinaya W. H. L., Vieira S., Garcia-Dias R., Mechelli A., \emph{Machine Learning. Methods and Applications to Brain Disorders}, Academic Press,2020
+\bibitem{pinaya} Pinaya W. H. L., Vieira S., Garcia-Dias R., Mechelli A., \emph{Machine Learning. Methods and Applications to Brain Disorders}, Academic Press,
+2020
 
 \bibitem{skansi} Skansi S. (2018) \emph{Introduction to Deep Learning. From Logical Calculus to Artificial Intelligence}, Springer International Publishing
 

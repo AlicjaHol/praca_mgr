@@ -75,6 +75,11 @@
 \usepackage{url}
 \usepackage{longtable}
 \usepackage{array,hhline}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+\tikzstyle{enc} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=blue!30]
+\tikzstyle{dec} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=orange!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
 
 %%%%%%%% hyperref po to by przeglądarka pedeef ukazywala na odwołania
 %%%%%%%% prawidłowo skonstruowane za pomocą \ref, \cite i.t.d. jako
@@ -400,9 +405,9 @@ nr albumu: 89892
 
 \chapter*{Wstęp}
 
+tu będzie jakiś wstęp
 
-
-\chapter{Przegląd autoenkoderów}
+\chapter{Część teoretyczna}
 
 \section{Sztuczne sieci neuronowe}
 
@@ -898,15 +903,37 @@ Autoenkodery splotowe są typem autoenkoderów, który najlepiej nadaje się do 
 
 
 
-
 \subsubsection{Autoenkoder rekurencyjny}
 
 Autoenkodery rekurencyjne zwykle służą do przetwarzania danych sekwencyjnych, takich jak szeregi czasowe czy tekst. W przypadku takiego autoenkodera, koderem zwykle jest sieć sekwencyjno-wektorowa która kompresuje sekwencję wejściową do pojedynczego wektora. Dekoderem jest sieć wektorowo-sekwencyjna odwracająca tą operację \cite{geron}.
 
 
+\subsubsection{Autoenkoder wariancyjny}
+
+Autoenkodery wariancyjne istotnie różnią się od opisywanych wcześniej rodzajów autoenkoderów. Są one autoenkoderami probabilistycznymi, czyli generują częściowo losowe wyniki. Stanowią one klasę modeli generatywnych, co oznacza, że są w stanie tworzyć nowe dane przypominające te ze zbioru uczącego. 
 
 
 
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{rys/vae_structure.png}
+	\caption{Przykładowa struktura autoenkodera wariancyjnego}
+	\zrodlo{\cite{geron}}
+	\label{fig:autoenkoder-wariancyjny}
+\end{figure}
+
+
+Na rysunku \ref{fig:autoenkoder-wariancyjny} przedstawiona jest przykładowa struktura autoenkodera wariancyjnego. Można zauważyć tutaj elementy podstawowej architektury autoenkoderów: koder i dekoder składają się z dwóch warstw ukrytych. Mamy też do czynienia z pewną modyfikacją: koder nie generuje bezpośredniego kodowania próbki wejściowej, lecz \textbf{uśrednione kodowanie} $\mu$ oraz odchylenie standardowe $\sigma$. Rzeczywiste kodowanie jest następnie losowane z rozkładu normalnego o parametrach właśnie $\mu$ i $\sigma$. Następnie dekoder w standardowy sposób dekoduje wylosowane kodowanie. W czasie uczenia funkcja kosztu zmusza kodowania do stopniowego poruszania się po przestrzeni kodowania (nazywanej również przestrzenią ukrytą, z angielskiego \emph{latent space}) w poszukiwaniu miejsca wewnątrz obszaru przypominającego chmurę punktów gaussowskich \cite{geron}.
+
+Funkcja kosztu autoenkodera wariancyjnego składa się z dwóch członów. Pierwszy jest tradycyjną funkcją straty rekonstrukcji, która zmusza autoenkoder do rekonstruowania danych wejściowych. Drugi element nazywany jest \textbf{funkcją straty ukrytej} (ang. \emph{latent loss}). Sprawia on, że autoenkoder uzyskuje reprezentacje przypominające te uzyskiwanie z rozkładu normalnego. Stosujemy w tym celu dywergencję Kullbacka-Leiblera pomiędzy docelowym rozkładem (normalnym) a rzeczywistym rozkładem kodowań. Funkcja straty ukrytej wygląda wówczas następująco:
+$$-\frac{1}{2}\sum_{i=1}^{n}[1+\log(\sigma_i^2)-\sigma_i^2-\mu_i^2],$$
+gdzie $n$ - wymiarowość kodowań, $\mu_i$ i $\sigma_i$ to średnia i odchylenie standardowe $i$-tej składowej kodowania. Koder generuje na wyjściu wektory $\mathbf{\mu}$ i $\mathbf{\sigma}$, przechowujące wszystkie wartości $\mu_i$ i $\sigma_i$.
+
+Często spotykaną modyfikacją jest zastąpienie $\mathbf{\sigma}$ na wyjściu kodera przez $\mathbf{\gamma}=\log(\mathbf{\sigma}^2)$. Rozwiązanie to jest stabilniejsze numerycznie i przyspiesza proces uczenia \cite{geron}. Funkcja straty ukrytej ma wówczas postać:
+$$-\frac{1}{2}\sum_{i=1}^{n}[1+\gamma_i-\exp(\gamma_i)-\mu_i^2].$$
+
+Warto zauważyć, że po wytrenowaniu autoenkodera wariancyjnego generowanie nowych próbek jest bardzo łatwe - wystarczy wylosować kodowanie z rozkładu normalnego, a następnie rozkodować je przy użyciu dekodera \cite{geron}.
 
 \subsubsection{Autoenkoder przeciwstawny}
 
@@ -994,102 +1021,107 @@ W zadaniach klasyfikacji lub regresji autoenkodery mogą być wykorzystywane do 
 
 \subsubsection{Zmniejszenie wymiarowości}
 
-(źródło jak wyżej, ale również tu: \url{https://towardsdatascience.com/autoencoders-in-practice-dimensionality-reduction-and-image-denoising-ed9b9201e7e1})
+%(źródło jak wyżej, ale również tu: \url{https://towardsdatascience.com/autoencoders-in-practice-dimensionality-reduction-and-image-denoising-ed9b9201e7e1})
 
-Autoenkodery trenują sieć w celu wyjaśnienia naturalnej struktury danych w efektywnej reprezentacji niskowymiarowej. Osiąga się to poprzez zastosowanie strategii dekodowania i kodowania w celu zminimalizowania błędu rekonstrukcji.
+Autoenkodery trenują sieć w celu wyjaśnienia naturalnej struktury danych w efektywnej reprezentacji niskowymiarowej. Osiąga się to poprzez zastosowanie strategii dekodowania i kodowania w celu zminimalizowania błędu rekonstrukcji \cite{kumar}.
+
+\newpage
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.8\linewidth]{rys/dimensionality_reduction.png}
-	\caption{Redukcja wymiarowości}
-	\zrodlo{towards data science}
+	\caption{Autodenkoder w zastosowaniu do redukcji wymiarowości}
+	\zrodlo{\cite{kumar}}
 	\label{fig:dimensionality-reduction}
 \end{figure}
 
-Jak widać powyżej, autoenkoder składa się z trzech elementów:
-
-Koder - funkcja służąca do kompresji danych do ich reprezentacji w niższym wymiarze.
-
-Wąskie gardło - nazywane również przestrzenią ukrytą, gdzie nasze początkowe dane są reprezentowane w niższym wymiarze.
-
-Dekoder - funkcja dekompresji lub rekonstrukcji danych o niskim wymiarze z powrotem do wymiaru początkowego.
-
-Wymiar wejściowy i wymiar wyjściowy mają 3000 wymiarów, a pożądany wymiar zredukowany wynosi 200. Możemy stworzyć sieć pięciowarstwową, w której koder ma 3000 i 1500 neuronów, podobnie jak w przypadku sieci dekodera.
-
-Embeddingi wektorowe skompresowanej warstwy wejściowej można traktować jako embedding warstwy wejściowej o zredukowanym wymiarze.
 
 
-\url{https://towardsdatascience.com/dimensionality-reduction-pca-versus-autoencoders-338fcaf3297d}
+\noindent Jak widać na rysunku \ref{fig:dimensionality-reduction}, autoenkoder składa się z trzech elementów:
 
-Porównanie autokodera niedopełnionego z PCA
+\begin{itemize}
 
-- PCA jest liniową transformacją danych, podczas gdy AE mogą być liniowe lub nieliniowe
+\item koder - funkcja służąca do kompresji danych do ich reprezentacji w niższym wymiarze.
 
-- PCA jest szybsze niż AE, które używają spadku gradientu 
+\item wąskie gardło (ang. \emph{bottleneck})- nazywane również przestrzenią ukrytą, gdzie nasze początkowe dane są reprezentowane w niższym wymiarze.
 
-- PCA gwarantuje ortogonalność wynikowej przestrzeni zmiennych. AE dąży jedynie do jak najmniejszej wartości funkcji straty
+\item dekoder - funkcja dekompresji lub rekonstrukcji danych o niskim wymiarze z powrotem do wymiaru początkowego.
 
-- AE są w stanie modelować bardziej złożone lub nieliniowe zależności, podczas gdy PCA jest prostym przekształceniem liniowym
+\end{itemize}
 
-- przy decyzji PCA vs AE, warto wybierać PCA dla mniejszych zbiorów danych, a AE dla większych
+W przykładzie na rysunku \ref{fig:dimensionality-reduction} warstwa wejściowa i warstwa wyjściowa mają wymiar 3000, a pożądany wymiar zredukowany wynosi 200. Możemy stworzyć sieć pięciowarstwową, w której koder ma 3000 i 1500 neuronów, podobnie jak w przypadku sieci dekodera. Reprezentacje ukryte można traktować jako reprezentację o zredukowanym wymiarze.
 
-- jedynym parametrem metody PCA jest "k" - liczba ortogonalnych wymiarów które chcemy uzyskać. W AE mamy wszystkie hiperparametry architektury sieci neuronowej
+Popularną metodą redukowania wymiarowości jest analiza składowych głównych. Porównamy tą metodę ze stosowaniem autoenkoderów \cite{mungoli}:
 
-- AE z jedną warstwą i liniową funkcją aktywacji ma działanie podobne do PCA. AE z wieloma warstwami i nieliniowymi funkcjami aktywacji (Głębokie AE, Deep AE) są skłonne do przeuczenia, mogą być poprawiane przez regularyzację i odpowiednie zaprojektowanie sieci
+\begin{itemize}
+
+\item  PCA jest liniową transformacją danych, podczas gdy autoenkodery mogą być liniowe lub nieliniowe
+
+\item PCA jest szybsze niż autodenkodery, które są trenowane przy użyciu algorytmu spadku gradientu 
+
+\item PCA gwarantuje ortogonalność wynikowej przestrzeni zmiennych, autoenkoder dąży jedynie do osiągnięcia jak najmniejszej wartości funkcji straty
+
+\item autodenkodery są w stanie modelować bardziej złożone lub nieliniowe zależności, podczas gdy PCA jest prostym przekształceniem liniowym
+
+\item  przy decyzji między użyciem PCA i autodenkodera, warto wybierać PCA dla mniejszych zbiorów danych, a autodenkodery dla większych
+
+\item PCA ma tylko jeden hiperparametr - liczba ortogonalnych wymiarów, które chcemy uzyskać. W przypadku autodenkoera występują wszystkie hiperparametry architektury sieci neuronowej
+
+\item autoenkoder z jedną warstwą i liniową funkcją aktywacji ma działanie podobne do PCA. Autoenkodery z wieloma warstwami i nieliniowymi funkcjami aktywacji (Głęboki Autoenkoder) są skłonne do przeuczenia, mogą być poprawiane przez regularyzację i odpowiednie zaprojektowanie sieci neuronowej
+
+\end{itemize}
 
 \subsubsection{Wyodrębnianie cech}
 
-Autokodery mogą być używane jako ekstraktory cech w zadaniach klasyfikacji lub regresji. Autokodery pobierają nieoznakowane dane i uczą się efektywnych kodowań struktury danych, które mogą być wykorzystane w zadaniach uczenia nadzorowanego.
-
-Po wytrenowaniu sieci auto-enkodera na próbce danych treningowych można zignorować część dekodera auto-enkodera, a jedynie użyć kodera do przekształcenia surowych danych wejściowych o wyższym wymiarze na przestrzeń zakodowaną o niższym wymiarze. Ten niższy wymiar danych może być wykorzystany jako cecha w zadaniach nadzorowanych.
+Autokodery mogą być używane jako ekstraktory cech w zadaniach klasyfikacji lub regresji. Autokodery pobierają nieoznakowane dane i uczą się efektywnych kodowań struktury danych, które mogą być wykorzystane w zadaniach uczenia nadzorowanego. Po wytrenowaniu sieci autoenkodera na próbce danych treningowych można zignorować dekoder, a jedynie użyć kodera do przekształcenia surowych danych wejściowych o wyższym wymiarze na przestrzeń zakodowaną o niższym wymiarze (rysunek \ref{fig:feature-extractor}). Ten niższy wymiar danych może być wykorzystany jako cecha w zadaniach uczenia nadzorowanego \cite{kumar}.
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.8\linewidth]{rys/feature_extractor.png}
-	\caption{Wyodrębnianie cech}
-	\zrodlo{towards data science}
+	\caption{Autoenkoder stosowany do ekstrakcji cech}
+	\zrodlo{\cite{kumar}}
 	\label{fig:feature-extractor}
 \end{figure}
 
 \subsubsection{Odszumianie obrazów}
 
-Surowe dane wejściowe ze świata rzeczywistego są często zaszumione, a wytrenowanie solidnego modelu nadzorowanego wymaga danych oczyszczonych i pozbawionych szumu. Do odszumiania danych można wykorzystać autoenkodery.
+Surowe dane wejściowe ze świata rzeczywistego są często zaszumione, a wytrenowanie dobrego modelu nadzorowanego wymaga danych oczyszczonych i pozbawionych szumu. Do odszumiania danych można wykorzystać autoenkodery. Jednym z popularnych zastosowań jest odszumianie obrazów, w którym autoenkodery próbują zrekonstruować obraz pozbawiony szumu z zaszumionego obrazu wejściowego \cite{kumar}.
 
-Jednym z popularnych zastosowań jest odszumianie obrazów, w którym autoenkodery próbują zrekonstruować obraz pozbawiony szumu z zaszumionego obrazu wejściowego.
+\newpage
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=\linewidth]{rys/image_denoising.png}
-	\caption{Odszumianie obrazów}
-	\zrodlo{towards data science}
+	\caption{Stosowanie autoenkodera do odszumiania obrazu}
+	\zrodlo{\cite{kumar}}
 	\label{fig:image-denoising}
 \end{figure}
 
-Zakłócony obraz wejściowy jest podawany do autoenkodera jako wejście, a bezszumowe wyjście jest rekonstruowane przez minimalizację straty rekonstrukcji w stosunku do oryginalnego wyjścia docelowego (bezszumowego). Po wytrenowaniu wag autoenkodera można je dalej wykorzystać do odszumiania obrazu surowego.
+Zakłócony obraz wejściowy jest podawany do autoenkodera jako wejście, a bezszumowe wyjście jest rekonstruowane przez minimalizację straty rekonstrukcji w stosunku do oryginalnego wyjścia docelowego (bezszumowego). Po wytrenowaniu wag autoenkodera można je dalej wykorzystać do odszumiania obrazu surowego. Schemat działania autoenkodera odszumiającego widać na rysunku \ref{fig:image-denoising}.
 
 \subsubsection{Kompresja obrazu}
 
-Innym zastosowaniem sieci auto-enkoderów jest kompresja obrazów. Surowy obraz wejściowy można przekazać do sieci kodera i uzyskać skompresowany wymiar zakodowanych danych. Wagi sieci autoenkodera mogą być uczone przez rekonstrukcję obrazu ze skompresowanego kodowania za pomocą sieci dekodera.
+Innym zastosowaniem sieci autoenkoderów jest kompresja obrazów. Surowy obraz wejściowy można przekazać do sieci kodera i uzyskać skompresowany wymiar zakodowanych danych. Wagi sieci autoenkodera mogą być uczone przez rekonstrukcję obrazu ze skompresowanego kodowania za pomocą sieci dekodera \cite{kumar}. Schemat takiego zastosowania jest pokazany na rysunku \ref{fig:image-compression}.
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.8\linewidth]{rys/image_compression.png}
-	\caption{kompresja obrazów}
-	\zrodlo{towards data science}
+	\caption{Zastosowanie autoenkodera do kompresji obrazu}
+	\zrodlo{\cite{kumar}}
 	\label{fig:image-compression}
 \end{figure}
 
 Zazwyczaj autoenkodery nie nadają się zbyt dobrze do kompresji danych, lepiej sprawdzają się raczej podstawowe algorytmy kompresji.
 
-\subsubsection{Szukanie obrazu}
+\subsubsection{Wyszukiwanie obrazu}
 
-Do kompresji bazy danych obrazów można użyć autokoderów. Skompresowane osadzenie może być porównywane lub przeszukiwane z zakodowaną wersją szukanego obrazu.
+Do kompresji bazy danych obrazów można użyć autokoderów. Skompresowana reprezentacja może być przy przeszukiwaniu porównywana z zakodowaną wersją szukanego obrazu \cite{kumar}.
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=\linewidth]{rys/image_search.png}
-	\caption{szukanie obrazów}
-	\zrodlo{towards data science}
+	\caption{Zastosowanie autoenkodera do wyszukiwania obrazu}
+	\zrodlo{\cite{kumar}}
 	\label{fig:image-search}
 \end{figure}
 
@@ -1097,18 +1129,16 @@ Do kompresji bazy danych obrazów można użyć autokoderów. Skompresowane osad
 
 Innym użytecznym zastosowaniem sieci autoenkoderów jest wykrywanie anomalii. Model wykrywania anomalii można wykorzystać do wykrywania oszukańczych transakcji lub wszelkich zadań nadzorowanych o wysokim stopniu nierównowagi.
 
-Idea polega na trenowaniu autoenkoderów tylko na próbkach danych jednej klasy (klasy większościowej). W ten sposób sieć jest w stanie zrekonstruować dane wejściowe z dobrą lub mniejszą stratą rekonstrukcji. Jeśli przez sieć autoenkodera przepuści się próbkę danych innej klasy docelowej, spowoduje to porównywalnie większą stratę rekonstrukcji.
-
-Można określić wartość progową straty rekonstrukcji (wynik anomalii), której przekroczenie będzie uznawane za anomalię.
+ Idea polega na trenowaniu autoenkoderów tylko na próbkach danych jednej klasy (klasy większościowej). W ten sposób sieć jest w stanie zrekonstruować dane wejściowe z dobrą lub mniejszą stratą rekonstrukcji. Jeśli przez sieć autoenkodera przepuści się próbkę danych innej klasy docelowej, spowoduje to porównywalnie większą stratę rekonstrukcji. Można określić wartość progową straty rekonstrukcji (wynik anomalii), której przekroczenie będzie uznawane za anomalię \cite{kumar}.
 
 \subsubsection{Uzupełnianie brakujących danych}
 
 Do imputacji brakujących wartości w zbiorze danych można wykorzystać autoenkodery odszumiające. Idea polega na trenowaniu sieci autoenkoderów poprzez losowe umieszczanie brakujących wartości w danych wejściowych i próbę odtworzenia oryginalnych danych surowych poprzez minimalizację straty rekonstrukcji.
 
-Po wytrenowaniu wag autoenkodera rekordy zawierające brakujące wartości mogą być przepuszczane przez sieć autoenkodera w celu zrekonstruowania danych wejściowych, także z imputowanymi brakującymi cechami.
+Po wytrenowaniu wag autoenkodera rekordy zawierające brakujące wartości mogą być przepuszczane przez sieć autoenkodera w celu zrekonstruowania danych wejściowych, także z imputowanymi brakującymi cechami \cite{kumar}.
 
 
-\chapter{jakiś tytuł części praktycznej}
+\chapter{Część praktyczna}
 %\chapter{Przykłady zastosowań autoenkoderów}
 
 %\section{Analiza PCA za pomocą autoenkodera niedopełnionego}
@@ -1174,9 +1204,237 @@ Po wytrenowaniu wag autoenkodera rekordy zawierające brakujące wartości mogą
 
 %\section{Kolejny przykład}
 
+%\noindent Pomysł roboczy:
+
+%\noindent Zbiór danych Anime Face Datset \url{https://www.kaggle.com/datasets/splcher/animefacedataset} (ewentualnie jakiś inny zbiór obrazów lub zdjęć)
+
+%\noindent Zadania które można wykonać:
+
+%- kompresja obrazu (przykład dla zbioru MNIST \url{https://blog.paperspace.com/autoencoder-image-compression-keras/})
+
+%- wyszukiwanie podobnego obrazu (przykład dla jakichś hamburgerów \url{https://towardsdatascience.com/find-similar-images-using-autoencoders-315f374029ea})
+
+%- zaszumianie i odszumianie obrazu
+
+%- generowanie nowego obrazu
+
+%- może wykrywanie anomalii
+
+Zbiorem, na przykładzie którego będziemy pokazywać zastosowania autoenkoderów, jest zbiór danych MNIST. Przykładowe dane z części treningowej tego zbioru są przedstawione na rysunku \ref{fig:MNIST-train}. W zbiorze uczącym znajduje się 60 tysięcy obserwacji, a w testowym 10 tysięcy.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{rys2/MNIST_train.png}
+	\caption{Pięć pierwszych obserwacji ze zbioru cyfr MNIST}
+	\label{fig:MNIST-train}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+\section{Prosty autoenkoder}
+
+Pierwszym przykładem jest tak zwany prosty autoenkoder - nazywany tak w odróżnieniu od autoenkodera splotowego. Składa się on z kodera i dekodera, z których każdy jest pojedynczą warstwą gęstą. Warstwa wyjściowa będzie przyjmować obrazy ,,spłaszczone'' do wektora o długości 784 (obrazy 2D były wymiaru $28 \times 28$). Reprezentacja ukryta ma wymiar 15, jest to więc autoenkoder niedopełniony (kodowania mają mniejszy wymiar niż dane wejściowe). Następnie dekoder przywraca wejściowy wymiar 784. Struktura użytego autoenkodera jest przedstawiona na rysunku \ref{fig:chart-simple-autoencoder}.
+\newpage
+
+	\begin{figure}[!h]
+	\centering
+	\begin{tikzpicture}[node distance=2cm]
+	\node (input) [enc] {Wejście};
+	\node (encoder) [enc, below of=input] {Koder};
+	\node (decoder) [dec, right of=encoder, xshift=3cm] {Dekoder};
+	\node (output) [dec, above of=decoder] {Wyjście};
+	\draw [arrow] (input) -- node [anchor=west]{784} (encoder);
+	\draw [arrow] (encoder) -- node[anchor=south] {15} (decoder);
+	\draw [arrow] (decoder) -- node [anchor=west]{784} (output);
+	\end{tikzpicture}
+	\caption{Struktura autoenkodera prostego oraz wymiary kolejnych warstw}
+	\label{fig:chart-simple-autoencoder}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+
+Model autoenkodera jest uczony przez 15 epok. Rozmiar pakietu (\textit{batch size}) wynosi 256. Zbiorem walidacyjnym jest zbiór testowy. 
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.6\linewidth]{rys2/simple_encoded.png}
+	\caption{Reprezentacja 15-wymiarowa dla pierwszej obserwacji ze zbioru testowego MNIST}
+	\label{fig:simple-encoded}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+Rysunek \ref{fig:simple-encoded} przedstawia kodowanie w ukrytej przestrzeni 15-wymiarowej dla pierwszej obserwacji ze zbioru testowego. Rysunek \ref{fig:simple-reconstructions} przedstawia pięć pierwszych obrazów ze zbioru testowego (górny rząd) oraz ich rekonstrukcje po odkodowaniu przez dekoder (dolny rząd). Można zauważyć, że po przejściu przez autoenkoder niedopełniony, obrazy znacznie tracą na jakości.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys2/simple_reconstructions.png}
+	\caption{Pięć pierwszych obserwacji ze zbioru testowego MNIST: w górnym rzędzie oryginalne obrazy, w dolnym rekonstrukcje z autoenkodera niedopełnionego}
+	\label{fig:simple-reconstructions}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+\newpage
+
+Rysunek \ref{fig:simple-loss} przedstawia wartość funkcji straty w kolejnych epokach uczenia autoenkodera prostego. W pierwszej epoce wartość funkcji straty wynosiła około 0.3. Widać, że największy spadek wartości funkcji straty następował w pierwszych kilku iteracjach. Po około 10 epoce wartość funkcji straty utrzymywała się na podobnym poziomie (około 0.13).
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{rys2/simple_loss.png}
+	\caption{Wartość funkcji straty w kolejnych epokach trenowania autoenkodera niedopełnionego}
+	\label{fig:simple-loss}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+\section{Autoenkdoer splotowy}
+
+W przypadku danych ze zbioru MNIST obrazy są dość małe, więc nawet prosty autoenkdoer dał dość dobre wyniki.
+Jednak w zastosowaniu do danych wejściowych będących obrazami, zamiast autoenkodera prostego można użyć autoenkodera splotowego, który jest przeznaczony przede wszystkim do takiego typu danych. W autoenkoderze splotowym sieć kodera składa się z warstw splotowych i łączących - zazwyczaj ma ona na celu zmniejszenie wymiarowości danych (wysokości i szerokości obrazu) oraz zwiększenie głębokości (liczby map cech). Dekoder powinien przeprowadzić operację odwrotną (zwiększyć wysokość i szerokość obrazu, a zmniejszyć liczbę map cech). W tym celu można wykorzystać transponowane warstwy splotowe lub łączyć zwykłe warstwy splotowe z warstwami ekspansji \cite{geron}.
+
+Rysunek \ref{fig:chart-conv-autoencoder} przedstawia strukturę użytego autoenkodera splotowego. Koder składa się z dwóch warstw splotowych i dwóch warstw łączących. Warstwy łączące zmniejszają wymiary obrazu z 28x28 kolejno do 14x14 i 7x7. Dekoder składa się z dwóch warstw splotowych i dwóch warstw ekspansji, które zwiększają wymiary skompresowanego obrazu kolejno do 14x14 i 28x28, osiągając oryginalny wymiar. W przypadku warstw splotowych, jądro jest wymiaru 3x3. Warstwy 1 i 4 mają po 30 filtrów, a warstwy 2 i 3 po 15 filtrów. Warstwa wyjściowa również jest warstwą splotową. Ma ona jeden filtr. W warstwach łączących stosowana jest metoda redukowania \emph{MaxPooling}, gdzie jądro łączące ma rozmiar 2x2. W warstwach ekspansji współczynnik nadpróbkowania  jest równy 2 dla wierszy i tyle samo dla kolumn.
+
+	\begin{figure}[!h]
+	\centering
+	\begin{tikzpicture}[node distance=2cm]
+	\node (input) [enc] {Warstwa wejściowa (splotowa)};
+	\node (conv1) [enc, below of=input] {Warstwa splotowa 1};
+	\node (maxpool1) [enc, below of=conv1] {Warstwa łącząca 1};
+	\node (conv2) [enc, below of=maxpool1] {Warstwa splotowa 2};
+	\node (maxpool2) [enc, below of=conv2] {Warstwa łącząca 2};
+	\node (conv3) [dec, right of=maxpool2, xshift=4cm] {Warstwa splotowa 3};
+	\node (upsampl1) [dec, above of=conv3] {Warstwa ekspansji 1};
+	\node (conv4) [dec, above of=upsampl1] {Warstwa splotowa 4};
+	\node (upsampl2) [dec, above of=conv4] {Warstwa ekspansji 2};
+	\node (output) [dec, above of=upsampl2] {Warstwa wyjściowa (splotowa)};
+	\draw [arrow] (input) -- node [anchor=west]{28x28x1} (conv1);
+	\draw [arrow] (conv1) -- node[anchor=west] {28x28x30} (maxpool1);
+	\draw [arrow] (maxpool1) -- node[anchor=west] {14x14x30} (conv2);
+	\draw [arrow] (conv2) -- node[anchor=west] {14x14x15} (maxpool2);
+	\draw [arrow] (maxpool2) -- node[anchor=south] {7x7x15} (conv3);
+	\draw [arrow] (conv3) -- node[anchor=west] {7x7x15} (upsampl1);
+	\draw [arrow] (upsampl1) -- node[anchor=west] {14x14x15} (conv4);
+	\draw [arrow] (conv4) -- node[anchor=west] {14x14x30} (upsampl2);
+	\draw [arrow] (upsampl2) -- node [anchor=west]{28x28x30} (output);
+	\end{tikzpicture}
+	\caption{Struktura autoenkodera splotowego oraz wymiary kolejnych warstw}
+	\label{fig:chart-conv-autoencoder}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+Autoenkoder splotowy jest trenowany przez 15 epok. Rozmiar pakietu (\emph{batch size}) wynosi 128. Zbiorem walidacyjnym jest zbiór testowy.
+
+Na rysunku \ref{fig:conv-reconstructions} widać efekty działania autoenkodera splotowego. W górnym rzędzie przedstawione są oryginalne obrazy ze zbioru testowego MNIST, a w dolnym rzędzie ich rekonstrukcje z autoenkodera. Widać, że obrazy w obu rzędach są do siebie podobne - strata jakości jest mniejsza niż w przypadku autoenkodera niedopełnionego.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys2/conv_reconstructions.png}
+	\caption{Pięć pierwszych obserwacji ze zbioru testowego MNIST: w górnym rzędzie oryginalne obrazy, w dolnym rekonstrukcje z autoenkodera splotowego}
+	\label{fig:conv-reconstructions}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+Rysunek \ref{fig:conv-loss} przedstawia wartości funkcji straty w kolejnych epokach trenowania autoenkodera splotowego. Widać, że wartości funkcji straty maleją przez wszystkie 15 epok, co oznacza, że raczej nie wystąpiło przeuczenie modelu. Można też zauważyć, że już w pierwszej epoce wartość funkcji straty jest niższa niż w 15 epokach w przypadku autoenkodera niedopełnionego. Oznacza to, że rekonstrukcje z autoenkodera splotowego znacznie mniej różnią się od oryginalnych danych niż rekonstrukcje z autoenkdoera niedopełnionego.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{rys2/conv_loss.png}
+	\caption{Wartość funkcji straty w kolejnych epokach trenowania autoenkodera splotowego}
+	\label{fig:conv-loss}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+\section{Autoenkoder odszumiający}
+
+Pokażemy teraz zastosowanie autoenkodera splotowego do odszumiania zanieczyszczonych obrazów. W poprzednich przykładach zbiór uczący stanowił zarówno dane wejściowe, jak i oczekiwane dane wyjściowe w modelu. W przypadku autoenkodera odszumiajacego zbiór uczący również jest traktowany jako docelowy wynik, ale danymi wejściowymi są zaszumione obserwacje z tego zbioru.
+
+
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys2/MNIST_noisy.png}
+	\caption{Zaszumione obrazy ze zbioru testowego MNIST}
+	\label{fig:MNIST-noisy}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+Rysunek \ref{fig:MNIST-noisy} przedstawia obrazy ze zbioru testowego MNIST po zaszumieniu. Zaszumienie polegało na dodaniu do wartości każdego piksela losowej liczby z rozkładu $\mathcal{N}(0,1)$, pomnożonej przez 0.7 (parametr 0.7 został przyjęty arbitralnie i można go zmieniać w celu dalszych eksperymentów).
+
+Struktura autoenkodera odszumiającego jest w tym przypadku analogiczna jak autoenkodera splotowego (rysunek \ref{fig:chart-conv-autoencoder}). Poszczególne warstwy różnią się jedynie liczbą filtrów, co jest pokazane na schemacie \ref{fig:chart-denoising-autoencoder}
+
+	\begin{figure}[!h]
+	\centering
+	\begin{tikzpicture}[node distance=2cm]
+	\node (input) [enc] {Warstwa wejściowa (splotowa)};
+	\node (conv1) [enc, below of=input] {Warstwa splotowa 1};
+	\node (maxpool1) [enc, below of=conv1] {Warstwa łącząca 1};
+	\node (conv2) [enc, below of=maxpool1] {Warstwa splotowa 2};
+	\node (maxpool2) [enc, below of=conv2] {Warstwa łącząca 2};
+	\node (conv3) [dec, right of=maxpool2, xshift=4cm] {Warstwa splotowa 3};
+	\node (upsampl1) [dec, above of=conv3] {Warstwa ekspansji 1};
+	\node (conv4) [dec, above of=upsampl1] {Warstwa splotowa 4};
+	\node (upsampl2) [dec, above of=conv4] {Warstwa ekspansji 2};
+	\node (output) [dec, above of=upsampl2] {Warstwa wyjściowa (splotowa)};
+	\draw [arrow] (input) -- node [anchor=west]{28x28x1} (conv1);
+	\draw [arrow] (conv1) -- node[anchor=west] {28x28x35} (maxpool1);
+	\draw [arrow] (maxpool1) -- node[anchor=west] {14x14x35} (conv2);
+	\draw [arrow] (conv2) -- node[anchor=west] {14x14x25} (maxpool2);
+	\draw [arrow] (maxpool2) -- node[anchor=south] {7x7x25} (conv3);
+	\draw [arrow] (conv3) -- node[anchor=west] {7x7x25} (upsampl1);
+	\draw [arrow] (upsampl1) -- node[anchor=west] {14x14x25} (conv4);
+	\draw [arrow] (conv4) -- node[anchor=west] {14x14x35} (upsampl2);
+	\draw [arrow] (upsampl2) -- node [anchor=west]{28x28x35} (output);
+	\end{tikzpicture}
+	\caption{Struktura autoenkodera splotowego oraz wymiary kolejnych warstw}
+	\label{fig:chart-denoising-autoencoder}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+Rysunek \ref{fig:denoising-reconstructions} przedstawia efekt działania autoenkodera odszumiającego. W górnym rzędzie widać oryginalne, niezaszumione obrazy ze zbioru testowego. Środkowy rząd przedstawia zanieczyszczone obrazy, które stanowią dane wejściowe dla autoenkodera. W dolnym rzędzie widać obrazy bez szumu, zrekonstruowane przez autoenkoder.
+
+\newpage
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys2/denoising_reconstructions.png}
+	\caption{Pięć pierwszych obserwacji ze zbioru testowego MNIST: w górnym rzędzie oryginalne obrazy, w środkowym zaszumione, w dolnym rekonstrukcje z autoenkodera odszumiającego}
+	\label{fig:denoising-reconstructions}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+Na rysunku \ref{fig:denoising-loss} przedstawiona jest wartość funkcji straty w kolejnych epokach uczenia autoenkodera odszumiającego.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{rys2/denoising_loss.png}
+	\caption{Wartość funkcji straty w kolejnych epokach trenowania autoenkodera odszumiającego}
+	\label{fig:denoising-loss}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+\section{Wyszukiwanie obrazu}
+
+Do wyszukiwania obrazu zostanie użyty autoenkoder prosty opisany w podrozdziale~2.1. Elementy ze zbioru treningowego zostały przy użyciu kodera skompresowane do wymiaru 15. Dla skompresowanych danych budowany jest model $k$ najbliższych sąsiadów, gdzie parametr $k$ oznacza również liczbę podobnych obrazów do zadanego, jakie zostaną wyszukane. Zbiorem testowym są w tym przypadku obrazy, do których chcemy wyszukać obrazy podobne. Użyty zbiór testowy jest przedstawiony na rysunku \ref{fig:retrieval-test}. Dla każdego z tych obrazów chcemy wyszukać $k=5$ obrazów podobnych.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{rys2/retrieval_test.png}
+	\caption{Zbiór testowy dla zadania wyszukiwania obrazu}
+	\label{fig:retrieval-test}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+Obrazy ze zbioru testowego również są kompresowane przy użyciu kodera. Następnie dla skompresowanej formy obrazów znajdujemy $k=5$ najbliższych sąsiadów według modelu KNN. Jako wynik wyświetlane są oryginalne wersje znalezionych obrazów.
+Wynik dla opisanego zbioru testowego znajduje się na rysunku \ref{fig:retrieval-results}. Widać, że dla każdego elementu ze zbioru testowego, znalezione obrazy zawierają odpowiednią cyfrę, zgodną z wyszukiwaniem (np. dla pierwszego przykładu z liczbą 7, wszystkie znalezione obrazy również przedstawiają tą cyfrę). 
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{rys2/retrieval_results.png}
+	\caption{Wyniki zastosowania autoenkodera przy wyszukiwaniu obrazu}
+	\label{fig:retrieval-results}
+	\zrodlo{Opracowanie własne}
+\end{figure}
 
 \chapter*{Podsumowanie i~wnioski}
 
+tu będzie jakieś podsumowanie a może nawet jakieś wnioski
 
 \begin{thebibliography}{99}
 
@@ -1200,7 +1458,9 @@ Po wytrenowaniu wag autoenkodera rekordy zawierające brakujące wartości mogą
 
 \bibitem{illustrated} Krohn J., Beyleveld G., Bassens A., \emph{Uczenie głębokie i sztuczna inteligencja. Interaktywny przewodnik ilustrowany}, Helion 2022
 
-\bibitem{kumar} Kumar S., (2021) \emph{7 Applications of Auto-Encoders every Data Scientist  should know. Essential guide to Auto-Encoders and its usage}, Towards Data Science (dostęp: 01.04.2022)
+\bibitem{kumar} Kumar S., (2021) \emph{7 Applications of Auto-Encoders every Data Scientist  should know. Essential guide to Auto-Encoders and its usage}, Towards Data Science, \url{https://towardsdatascience.com/6-applications-of-auto-encoders-every-data-scientist-should-know-dc703cbc892b} (dostęp: 01.04.2022)
+
+\bibitem{mungoli} Mungoli A., (2020) \emph{Dmiensionality Reduction: PCA versus Autoencoders. Comparison of PCA and AutoEncoders for Dimensionality Reduction}, Towards Data Science, \url{https://towardsdatascience.com/dimensionality-reduction-pca-versus-autoencoders-338fcaf3297d} (dostęp: 24.04.2022)
 
 \bibitem{osinga} Osinga D. (2019) \emph{Deep Learning. Receptury}, Helion SA
 
@@ -1208,6 +1468,8 @@ Po wytrenowaniu wag autoenkodera rekordy zawierające brakujące wartości mogą
 2020
 
 \bibitem{skansi} Skansi S. (2018) \emph{Introduction to Deep Learning. From Logical Calculus to Artificial Intelligence}, Springer International Publishing
+
+
 
 
 \end{thebibliography}

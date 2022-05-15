@@ -1424,11 +1424,96 @@ Do wyszukiwania obrazu zostanie użyty autoenkoder prosty opisany w podrozdziale
 Obrazy ze zbioru testowego również są kompresowane przy użyciu kodera. Następnie dla skompresowanej formy obrazów znajdujemy $k=5$ najbliższych sąsiadów według modelu KNN. Jako wynik wyświetlane są oryginalne wersje znalezionych obrazów.
 Wynik dla opisanego zbioru testowego znajduje się na rysunku \ref{fig:retrieval-results}. Widać, że dla każdego elementu ze zbioru testowego, znalezione obrazy zawierają odpowiednią cyfrę, zgodną z wyszukiwaniem (np. dla pierwszego przykładu z liczbą 7, wszystkie znalezione obrazy również przedstawiają tą cyfrę). 
 
+\newpage
+
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.7\linewidth]{rys2/retrieval_results.png}
 	\caption{Wyniki zastosowania autoenkodera przy wyszukiwaniu obrazu}
 	\label{fig:retrieval-results}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+\newpage
+
+\section{Wykrywanie anomalii przy użyciu autoenkodera}
+
+	\begin{figure}[!h]
+	\centering
+	\begin{tikzpicture}[node distance=2cm]
+	\node (input) [enc] {Wejście};
+	\node (conv1) [enc, below of=input] {Warstwa splotowa 1};
+	\node (conv2) [enc, below of=conv1] {Warstwa splotowa 2};
+	\node (conv3) [enc, below of=conv2] {Warstwa splotowa 3};
+	\node (conv4) [dec, right of=conv3, xshift=6cm] {Warstwa splotowa transponowana 1};
+	\node (conv5) [dec, above of=conv4] {Warstwa splotowa transponowana 2};
+	\node (conv6) [dec, above of=conv5] {Warstwa splotowa transponowana 3};
+	\node (output) [dec, above of=conv6] {Wyjście};
+	\draw [arrow] (input) -- node [anchor=west]{28x28x1} (conv1);
+	\draw [arrow] (conv1) -- node[anchor=west] {14x14x32} (conv2);
+	\draw [arrow] (conv2) -- node[anchor=west] {7x7x64} (conv3);
+	\draw [arrow] (conv3) -- node[anchor=south] {3x3x128} (conv4);
+	\draw [arrow] (conv4) -- node[anchor=west] {7x7x64} (conv5);
+	\draw [arrow] (conv5) -- node[anchor=west] {14x14x32} (conv6);
+	\draw [arrow] (conv6) -- node[anchor=west] {28x28x1} (output);
+	\end{tikzpicture}
+	\caption{Struktura autoenkodera splotowego zastosowanego do wykrywania anomalii}
+	\label{fig:chart-anomaly-autoencoder}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+W każdej warstwie jądro ma rozmiar 3x3, a krok wynosi 2. Funkcją aktywacji w każdej warstwie jest funkcja ReLU. Zastosowano uzupełnianie zerami. Funkcją straty jest funkcja SSIM. Autoenkoder jest trenowany przez 5 epok.
+
+Graniczną wartością straty, przy której uznamy obserwację za anormalną, jest dziewięćdziesiąty dziewiąty percentyl wartości funkcji straty ze zbioru treningowego (wynosi on około 0.017821).
+
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys2/ae_wykryte_anomalie.png}
+	\caption{Przykłady anomalii w zbiorze MNIST wykrytych za pomocą autoenkodera}
+	\label{fig:ae-wykryte-anomalie}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+\section{Generowanie obrazów (autoenkoder wariancyjny)}
+
+	\begin{figure}[!h]
+	\centering
+	\begin{tikzpicture}[node distance=2cm]
+	\node (input) [enc] {Wejście enkodera};
+	\node (dense) [enc, below of=input] {Warstwa ukryta 1};
+	\node (latent) [enc, below of=dense] {$\mu+\sigma\cdot \varepsilon$, $\varepsilon\sim N(0,1)$};
+	\node (encout) [enc, below of=latent] {Wyjście enkodera};
+	\node (decoder) [dec, right of=encout, xshift=4cm] {Wejście dekodera};
+	\node (dense2) [dec, above of=decoder] {Warstwa ukryta 2};
+	\node (dense3) [dec, above of=dense2] {Warstwa ukryta 3};
+	\node (output) [dec, above of=dense3] {Wyjście dekodera};
+	\draw [arrow] (input) -- node [anchor=west]{784} (dense);
+	\draw [arrow] (dense) -- node[anchor=west] {256} (latent);
+	\draw [arrow] (latent) -- node [anchor=west]{16} (encout);
+	\draw [arrow] (encout) -- node [anchor=south]{16} (decoder);
+	\draw [arrow] (decoder) -- node [anchor=west]{16} (dense2);
+	\draw [arrow] (dense2) -- node [anchor=west]{256} (dense3);
+	\draw [arrow] (dense3) -- node [anchor=west]{784} (output);
+	\end{tikzpicture}
+	\caption{Struktura autoenkodera wariancyjnego użytego do generowania obrazów przypominających te ze zbioru uczącego}
+	\label{fig:chart-var-autoencoder}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys2/latent_space_MNIST.png}
+	\caption{Przestrzeń ukryta autoenkodera wariancyjnego}
+	\label{fig:vae-latent-space}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys2/vae_generated.png}
+	\caption{Przykłady obrazów cyfr wygenerowanych przez autoenkoder wariancyjny}
+	\label{fig:vae-generated}
 	\zrodlo{Opracowanie własne}
 \end{figure}
 

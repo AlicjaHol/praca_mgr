@@ -405,13 +405,17 @@ nr albumu: 89892
 
 \chapter*{Wstęp}
 
-tu będzie jakiś wstęp
+Jeszcze niedawno komputery nie były w stanie wykonywać wielu zadań, które dla człowieka wydają się trywialne, jak na przykład rozpoznanie obiektu znajdującego się na zdjęciu. W ostatnich latach następuje jednak coraz większy rozwój w dziedzinie sztucznych sieci neuronowych, inspirowanych do pewnego stopnia biologicznym mózgiem człowieka. Zainteresowanie sztucznymi sieciami neuronowymi jest potęgowane przez dostępność ogromnej ilości danych uczących oraz znaczny wzrost mocy obliczeniowej urządzeń dostępnych dla użytkowników. Algorytmy uczące sieci neuronowe są stale udoskonalane, a pewne teoretyczne ograniczenia sztucznych sieci okazały się w praktyce nieistotne.
 
-\chapter{Część teoretyczna}
+Proste sieci neuronowe nie zawsze są wystarczające, szczególnie do zadań związanych z widzeniem komputerowym. Badania nad korą wzrokową w latach 60-tych doprowadziły do powstania wiele lat później koncepcji splotowej sieci neuronowej.
+
+\chapter{Podstawy teoretyczne}
+
+W tym rozdziale zostaną przedstawione pojęcia związane z autoenkoderami. Najpierw zostaną opisane ogólnie sztuczne sieci neuronowe, a także sieci splotowe stanowiące ważną część autoenkoderów. W następnej kolejności zostanie wprowadzona definicja autoenkodera, różne jego rodzaje pojawiające się w uczeniu nienadzorowanym, jak również przykłady ich zastosowań.
 
 \section{Sztuczne sieci neuronowe}
 
-\textbf{Sztuczny neuron} jest systemem składającym się z co najmniej jednego binarnego wejścia i dokładnie jednego binarnego wyjścia. Wyjście uaktywnia się, jeżeli jest aktywna określona liczba wejść. Sztuczne neurony są podstawowym elementem sztucznych sieci neuronowych. Do pewnego stopnia są inspirowane budową biologicznego neuronu. Na rysunku \ref{fig:neurony1} przedstawione są przykładowe sztuczne sieci neuronowe (SSN lub z angielskiego ANN) wykonujące różne operacje logiczne. W tych przykładach przyjęto, że neuron uaktywni się, gdy przynajmniej dwa wejścia będą aktywne \cite{geron}.
+Sieci neuronowe są podzbiorem uczenia maszynowego oraz stanowią kluczową część algorytmów głębokiego uczenia. Podstawowym elementem sztucznych sieci neuronowych jest sztuczny neuron, który do pewnego stopnia jest inspirowany budową biologicznego neuronu. \textbf{Sztuczny neuron} jest systemem składającym się z co najmniej jednego binarnego wejścia i dokładnie jednego binarnego wyjścia. Wyjście uaktywnia się, jeżeli jest aktywna określona liczba wejść. Na rysunku \ref{fig:neurony1} przedstawione są przykładowe sztuczne sieci neuronowe (SSN lub z angielskiego ANN) wykonujące różne operacje logiczne. W tych przykładach przyjęto, że neuron uaktywni się, gdy przynajmniej dwa wejścia będą aktywne \cite{geron}.
 
 \begin{figure}[!h]
 	\centering
@@ -422,6 +426,7 @@ tu będzie jakiś wstęp
 \end{figure}
 
 Jedną z najprostszych architektur SSN jest \textbf{perceptron}, którego podstawą jest sztuczny neuron zwany \textbf{progową jednostką logiczną} (ang. \textit{Threshold Logic Unit} - TLU) lub \textbf{liniową jednostką progową} (ang. \textit{Linear Threshold Unit} - LTU). Wartościami wejść i wyjść są liczby, a każde połączenie ma przyporządkowaną wagę. Jednostka TLU oblicza ważoną sumę sygnałów wejściowych, a następnie zostaje użyta funkcja skokowa na tej sumie. Schemat takiej jednostki został przedstawiony na rysunku \ref{fig:neurony2}.
+
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=8cm]{rys/neurony2.png}
@@ -429,7 +434,8 @@ Jedną z najprostszych architektur SSN jest \textbf{perceptron}, którego podsta
 	\zrodlo{\cite{ertel}}
 	\label{fig:neurony2}
 \end{figure}
-Często używaną funkcją skokową jest \textbf{funkcja Heaviside'a}, określona równaniem 
+
+\noindent Często używaną funkcją skokową jest \textbf{funkcja Heaviside'a}, określona równaniem 
 $$H(z)=\begin{cases}
 0, & \text{ jeśli } z<0\\
 1, & \text{ jeśli } z \geq 0
@@ -441,15 +447,17 @@ $$sgn(z)=\begin{cases}
 1, & \text{ jeśli } z > 0
 \end{cases}$$
 
-Perceptron jest złożony z jednej warstwy jednostek TLU, w której każdy neuron jest połączony ze wszystkimi wejściami. Warstwa tego typu nazywana jest \textbf{warstwą gęstą}. Warstwa, do której są dostarczane dane wejściowe, jest nazywana \textbf{warstwą wejściową} (ang. \textit{input layer}). Najczęściej do tej warstwy jest wstawiany również \textbf{neuron obciążeniowy} (ang. \textit{bias neuron}) $x_0=1$, który zawsze wysyła wartość 1. Na rysunku \ref{fig:perceptron1} znajduje się perceptron z dwoma neuronami wejściowymi i jednym obciążeniowym, a także z trzema neuronami w warstwie wyjściowej.
-
+Perceptron jest złożony z jednej warstwy jednostek TLU, w której każdy neuron jest połączony ze wszystkimi wejściami. Warstwa tego typu nazywana jest \textbf{warstwą gęstą}. Warstwa, do której są dostarczane dane wejściowe, jest nazywana \textbf{warstwą wejściową} (ang. \textit{input layer}). Najczęściej do tej warstwy jest wstawiany również \textbf{neuron obciążeniowy} (ang. \textit{bias neuron}) $x_0=1$, który zawsze wysyła wartość 1.  Na rysunku \ref{fig:perceptron1} znajduje się perceptron z dwoma neuronami wejściowymi i jednym obciążeniowym, a także z trzema neuronami w warstwie wyjściowej.
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=10cm]{rys/perceptron1.png}
+	\includegraphics[width=\linewidth]{rys/perceptron1.png}
 	\caption{Perceptron z trzema neuronami wejściowymi i trzema wyjściami}
 	\zrodlo{\cite{geron}}
 	\label{fig:perceptron1}
 \end{figure}
+
+
+
 
 Obliczanie sygnałów wyjściowych w warstwie gęstej przedstawia się wzorem
 $$h_{\mathbf{W},\mathbf{b}}(\mathbf{X})=\phi(\mathbf{XW}+\mathbf{b})$$
@@ -469,6 +477,8 @@ gdzie $E$ jest funkcją kosztu (funkcją straty) \cite{skansi}. Proces jest powt
 	Wagi połączeń wszystkich warstw ukrytych należy koniecznie zainicjować losowo. W przeciwnym przypadku proces uczenia zakończy się niepowodzeniem. Na przykład jeśli wszystkie wagi i obciążenia zostaną zainicjowane wartością 0, to model będzie działał tak, jak gdyby składał się tylko z jednego neuronu. Przy zainicjowaniu wag losowo, symetria zostanie złamana i algorytm propagacji wstecznej będzie w stanie wytrenować zespół zróżnicowanych neuronów \cite{geron}. 
 \end{uwaga}
 
+\subsection{Funckje aktywacji}
+
 Aby algorytm propagacji wstecznej działał prawidłowo, kluczową zmianą jest zastąpienie funkcji skokowej przez inne \textbf{funkcje aktywacji}. Zmiana ta jest konieczna, ponieważ funkcja skokowa zawiera jedynie płaskie segmenty i przez to nie pozwala korzystać z gradientu. 
 
 Najczęściej używana jest \textbf{funkcja logistyczna (sigmoidalna)}
@@ -484,7 +494,6 @@ $$ReLU(z)=max(0,z).$$
 Jest ona ciągła, ale nieróżniczkowalna w punkcie 0. Jej pochodna dla $z<0$ wynosi zero. Jej atutem jest szybkość przetwarzania. Nie ma ona maksymalnej wartości wyjściowej.
 W zadaniach regresji bywa wykorzystywany ,,wygładzony'' wariant funkcji ReLU, czyli funkcja \textbf{softplus}:
 $$softplus(z)=log(1+exp(z))$$
-
 Na  rysunku \ref{fig:funkcje-aktywacji} przedstawiono popularne funkcje aktywacji wraz z ich pochodnymi.
 
 \begin{figure}[!h]
@@ -496,7 +505,21 @@ Na  rysunku \ref{fig:funkcje-aktywacji} przedstawiono popularne funkcje aktywacj
 \end{figure}
 
 
-\newpage
+\subsection{Funkcje straty}
+
+Trenowanie sztucznej sieci neuronowej często polega na minimalizowaniu jakiejś funkcji straty. Opiszemy teraz kilka ważnych rodzajów takich funkcji:
+\begin{enumerate}
+	\item Binarna entropia krzyżowa (ang. \emph{binary cross-entropy}), używana do binarnej klasyfikacji, gdzie na wyjściu są możliwe dokładnie dwa stany\cite{programmathically}. Funkcja ta ma następującą postać
+	$$L=-\frac{1}{N}\sum_{i=1}^N(y_i \log(\hat{y_i})+(1-y_i)\log(1-\hat{y_i})),$$
+	gdzie $y_i$ jest oczekiwanym wynikiem,  $\hat{y_i}$ wynikiem otrzymanym z modelu, a $N$ jest liczbą obserwacji. W funkcji tej zawsze albo pierwszy albo drugi składnik jest równy zero (ponieważ $y_i=0$ lub $y_i=1$) Binarnej entropii krzyżowej można używać z funkcjami aktywacji takimi jak logistyczna (sigmoidalna), która w wyniku daje prawdopodobieństwo związane z wynikiem binarnym
+	\item Kategoryczna entropia krzyżowa (ang. \emph{categorical cross-entropy}) jest stosowana w klasyfikacji wieloklasowej. Działa ona na tej samej zasadzie co entropia binarna, ale wyniki są sumowane dla więcej niż dwóch klas \cite{programmathically}. Jeżeli $M$ jest liczbą klas, to entropia krzyżowa ma postać
+	$$L=-\frac{1}{N}\sum_{i=1}^N\sum_{j=1}^M y_{ij}\log(\hat{y_{ij}})$$
+	\item Błąd średniokwadratowy (ang. \emph{Mean Squared Error}) jest używany w zadaniach regresyjnych, gdzie oczekiwanym wynikiem są liczby rzeczywiste \cite{programmathically}. Funkcja ta ma postać
+	$$L=\frac{1}{N}\sum_{i=1}^N(y_i-\hat{y_i})^2$$
+\end{enumerate}
+W dalszej części pracy przy niektórych rozdzajach autoenkoderów opiszemy specjalne funkcje straty, które są w nich stosowane, jak na przykład dywergencja Kullbacka-Leiblera.
+
+
 \section{Sieci splotowe}
 
 
@@ -670,13 +693,13 @@ z \textbf{jądra łączącego}  (ang. pooling kernel) o rozmiarze 2×2, kroku o 
 	 Filtr w warstwie redukującej ma zazwyczaj wymiary 2x2 piksele, a krok ma długość dwóch pikseli. W takim wypadku filtr w każdej pozycji przetwarza cztery wartości aktywacji, wybiera największą i w efekcie czterokrotnie redukuje liczbę aktywacji \cite{illustrated}.
 \end{uwaga}
 
-\newpage
+
 
 Na rysunku \ref{fig:max-polling} widoczne jest działanie maksymalizującej warstwy redukującej na mapie aktywacji o wymiarze 4x4. Filtr przesuwa się nad danymi wejściowymi od lewej do prawej, od góry do dołu, tak jak w warstwie konwolucyjnej, i w każdej zajmowanej pozycji przeprowadza operację redukcji danych. W tym przykładzie filtr i krok mają rozmiar 2x2. Skutkuje to otrzymaniem mapy cztery razy mniejszej niż oryginalna.
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=\linewidth]{rys/max-polling.png}
+	\includegraphics[width=0.7\linewidth]{rys/max-polling.png}
 	\caption{Warstwa \emph{max-pooling} z filtrem i krokiem rozmiaru 2x2, zastosowana do mapy aktywacji o rozmiarze 4x4 (widoczna po lewej stronie) skutkuje uzyskaniem mapy czterokrotnie mniejszej niż oryginalna}
 	\zrodlo{\cite{illustrated}}
 	\label{fig:max-polling}
@@ -704,7 +727,15 @@ zastosowaniach niezmienniczość jest niepożądana, na przykład w segmentacji 
 klasyfikowania każdego piksela obrazu zgodnie z jego przynależnością do danego obiektu): jest oczywiste, że jeżeli obraz wejściowy zostanie przesunięty o jeden piksel w prawo, to wynik również powinien być przesunięty w taki sam sposób. Wówczas celem staje się \textbf{ekwiwariancja} (ang. equivariance), a nie niezmienniczość: mała zmiana w sygnale wejściowym
 powinna prowadzić do powiązanej z nią niewielkiej zmiany w sygnale wyjściowym.
 
-Podobnie do maksymalizującej warstwy łączącej jest zdefiniowana \textbf{uśredniająca warstwa łącząca} (average pooling layer), która zamiast maksimum używa średniej. Jest ona rzadziej wybierana w zastosowaniach niż warstwa maksymalizująca, z powodu słabszej wydajności. Obliczanie średniej zazwyczaj powoduje mniejszą utratę informacji niż obliczanie maksimum, ale za to warstwa maksymalizująca zachowuje wyłącznie najistotniejsze cechy i ignoruje te mniej ważne, dlatego kolejne warstwy otrzymują coraz czystszy sygnał.
+Podobnie do maksymalizującej warstwy łączącej jest zdefiniowana \textbf{uśredniająca warstwa łącząca} (average pooling layer), która zamiast maksimum używa średniej. Jest ona rzadziej wybierana w zastosowaniach niż warstwa maksymalizująca, z powodu słabszej wydajności. Obliczanie średniej zazwyczaj powoduje mniejszą utratę informacji niż obliczanie maksimum, ale za to warstwa maksymalizująca zachowuje wyłącznie najistotniejsze cechy i ignoruje te mniej ważne, dlatego kolejne warstwy otrzymują coraz czystszy sygnał. Na rysunku \ref{fig:max-avg-pooling} widoczne jest porównanie maksymalizującej i uśredniającej warstwy redukującej.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{rys/max_avg_pooling.png}
+	\caption{Porównanie warstwy łączącej maksymalizującej i uśredniającej}
+	\zrodlo{\cite{geron}}
+	\label{fig:max-avg-pooling}
+\end{figure}
 
 Ostatnim rodzajem warstwy łączącej często spotykanym we współczesnych architekturach jest
 \textbf{globalna uśredniająca warstwa łącząca} (ang. global average pooling layer). Mechanizm jej działania
@@ -758,7 +789,6 @@ Jak wspomniano wcześniej, aby autoenkoder był użyteczny, zamiast jedynie kopi
 \item autoenkodery rekurencyjne (ang. \emph{recurrent})
 \item autoenkodery wariancyjne (ang. \emph{variational})
 \item autoenkodery przeciwstawne (ang. \emph{adversial})
-\item autoenkodery stochastyczne (ang. \emph{stochastic})
 \end{itemize}
 W następnych podrozdziałach zostaną przybliżone cechy charakterystyczne tych rodzajów autoenkoderów.
 
@@ -856,7 +886,7 @@ Rysunek \ref{fig:autoenkoder-denoising} przedstawia przykłady zaszumionych obra
 	\label{fig:autoenkoder-denoising}
 \end{figure}
 
-Ogólna struktura autoenkodera odszumiającego została przedstawiona na rysunku \ref{fig:denoising-structure}. Wejściem jest zanieczyszczony obraz, a docelową wartością jest oryginał bez zniekształcenia. Sieć uczy się rozpoznawać i usuwać zniekształcenia, aby wygenerować rekonstrukcję. Autoenkoder nnie widzi oryginalnego, czystego obrazu, jedynie ten ze zniekształceniem. 
+Ogólna struktura autoenkodera odszumiającego została przedstawiona na rysunku \ref{fig:denoising-structure}. Wejściem jest zanieczyszczony obraz, a docelową wartością jest oryginał bez zniekształcenia. Sieć uczy się rozpoznawać i usuwać zniekształcenia, aby wygenerować rekonstrukcję. Autoenkoder nie widzi oryginalnego, czystego obrazu, jedynie ten ze zniekształceniem. 
 
 \begin{figure}[!h]
 	\centering
@@ -866,17 +896,19 @@ Ogólna struktura autoenkodera odszumiającego została przedstawiona na rysunku
 \end{figure}
 
 
-
+\newpage
 
 \subsubsection{Regularyzacja poprzez karanie pochodnych}
 
-kolejną strategią regularyzacji autoenkodera jest użycie kary $\Omega$ tak, jak w rzadkich autoenkoderach
+Kolejną strategią regularyzacji autoenkodera jest użycie kary $\Omega$ tak, jak w rzadkich autoenkoderach
 $$L(x, g(f(x)))+\Omega(h,x)$$
 ale z inną postacią $\Omega$:
 $$\Omega(h, x)=\lambda \sum_i ||\nabla_x h_i ||^2$$
-Zmusza to model do poznania funkcji, która nie zmienia się za bardzo przy niewielkich zmianach $x$. Ponieważ kara ta jest stosowana tylko w przykładach szkoleniowych, zmusza autoenkoder do poznawania cech, które przechwytują informacje o rozkładzie szkoleniowym.
+Zmusza to model do poznania funkcji, która nie zmienia się za bardzo przy niewielkich zmianach $x$. Ponieważ kara ta jest stosowana tylko w przykładach szkoleniowych, zmusza autoenkoder do poznawania cech, które przechwytują informacje o rozkładzie szkoleniowym. Autoenkoder z taką regularyzacją jest nazywany \textbf{kurczliwym} (ang. \emph{Contractive Autoencoder}) \cite{goodfellow}. Autoenkodery kurczliwe dzięki użyciu opisanej powyżej funkcji straty stają się odporne na niewielkie zmiany w zbiorze uczącym.
 
-Autoenkoder z taką regularyzacją jest nazywany \textbf{kurczliwym} \cite{goodfellow}.
+Autoenkodery kurczliwe mają pewne wspólne cechy z autoenkoderami rzadkimi oraz odszumiającymi. W autoenkoderze rzadkim celem jest, aby jak najwięcej elementów reprezentacji było bliskich zeru. W tym celu muszą one leżeć w lewej części funkcji sigmoidalnej, gdzie wartość tej funkcji jest bliska zeru, z bardzo małą pierwszą pochodną. Prowadzi to do kurczliwego odwzorowania w rzadkim autoenkoderze, mimo że nie jest to jego celem. Z kolei w przypadku autoenkodera odszumiającego, jego celem jest zwiększenie odporności kodera na małe zmiany w zbiorze uczącym, co jest podobnym celem, jak w przypadku autoenkodera kurczliwego. Różnica polega na tym, że kurczliwe autoenkodery zwiększają odporność reprezentajci $f(x)$, a autoenkdoery odszumiające zwiększają odporność rekonstrukcji, co tylko częściowo zwiększa odporność reprezentacji \cite{geeks}. 
+
+
 \subsubsection{Autoenkodery stosowe}
 
 
@@ -899,18 +931,90 @@ W celu zaoszczędzenia czasu można zamiast uczyć cały autoenkoder stosowy na 
 
 \subsubsection{Autoenkoder splotowy}
 
-Autoenkodery splotowe są typem autoenkoderów, który najlepiej nadaje się do przetwarzania obrazów. W takim rodzaju autoenkodera, koderem jest sieć konwolucyjna składająca się z warstw splotowych i redukujących. Zwykle zmniejsza ona wymiarowość obrazu (wysokość i szerokość), a zwiększa głębokość (liczbę map cech). Dekoder przeprowadza operację odwrotną: musi zwiększyć rozdzielczość i zredukować głębokość do pierwotnego wymiaru. W tym celu można wykorzystać transponowane warstwy splotowe \cite{geron}.
+Autoenkodery splotowe są typem autoenkoderów, który najlepiej nadaje się do przetwarzania obrazów. W takim rodzaju autoenkodera, koderem jest sieć konwolucyjna składająca się z warstw splotowych i redukujących. Zwykle zmniejsza ona wymiarowość obrazu (wysokość i szerokość), a zwiększa głębokość (liczbę map cech). Dekoder przeprowadza operację odwrotną: musi zwiększyć rozdzielczość i zredukować głębokość do pierwotnego wymiaru. W tym celu można wykorzystać transponowane warstwy splotowe lub łączyć warstwy ekspansji (\emph{UpSampling}) ze zwykłymi warstwami splotowymi. \cite{geron}.
 
+\textbf{Warstwa ekspansji} wykonuje nadpróbkowanie poprzez powtórzenie każdej wartości mxn razy, gdzie m to współczynnik nadpróbkowania dla wierszy, a n to współczynnik nadpróbkowania dla kolumn. Przykład działania warstwy ekspansji widać na rysunku \ref{fig:upsampling2d}.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{rys/upsampling2d.png}
+	\caption{Działanie warstwy ekspansji (nadpróbkowania)}
+	\zrodlo{\cite{upsampling}}
+	\label{fig:upsampling2d}
+\end{figure}
+
+Można powiedzieć, że \textbf{transponowane warstwy splotowe} zachowują się jak zwykłe warstwy splotowe z ułamkową długością kroku, tzn. stosują filtr do obszaru, który jest mniejszy niż rozmiar filtru. W ten sposób transponowane warstwy konwolucyjne wykonują operację w przeciwnym kierunku niż zwykłe warstwy konwolucyjne \cite{mishra}. Działanie transponowanej warstwy splotowej widać na rysunku \ref{fig:conv2dtranspose}. 
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{rys/conv2dtranspose.png}
+	\caption{Działanie warstwy splotowej transponowanej}
+	\zrodlo{\cite{prove}}
+	\label{fig:conv2dtranspose}
+\end{figure}
+
+\newpage
+
+Przy okazji autoenkoderów splotowych, warto wspomnieć o funkcji straty służącej typowo do porównania obrazów. Funkcja ta opiera się na wskaźniku podobieństwa strukturalnego (ang. \emph{Structural Similarity Index}, \emph{SSIM}). Mierzy on podobieństwo obrazów, biorąc pod uwagę trzy czynniki: jasność (ang. \emph{luminance}), kontrast i strukturę. Niech $\mathbf{x}$ oraz $\mathbf{y}$ będą porównywanymi fragmentami obrazów o wymiarze $N$. Jasność jest szacowana jako średnia intensywność:
+$$\mu_x=\frac{1}{N}\sum_{i=1}^N x_i$$
+Funkcja porównania jasności $l(\mathbf{x}, \mathbf{y})$ jest zatem funkcją $\mu_x$ i $\mu_y$.
+
+Następnie usuwamy średnią intensywność z porównywanych fragmentów: $\mathbf{x}-\mu_x$, co odpowiada rzutowi wektora $\mathbf{x}$ na hiperprzestrzeń zdefiniowaną przez $\displaystyle \sum_{i=1}^N x_i=0$. Używamy odchylenia standardowego jako estymatora kontrastu:
+$$\sigma_x=\left(\frac{1}{N-1}\sum_{i=1}^N (x_i-\mu_x)^2\right)^{\frac{1}{2}}$$
+Funkcja porównania kontrastu $c(\mathbf{x}, \mathbf{y})$ jest więc funkcją porównującą $\sigma_x$ i $\sigma_y$.
+
+W trzecim kroku wartości sygnałów są normalizowane (dzielone przez odchylenie standardowe), po to, aby dwa porównywane obrazy miały jednostkową wariancję. Porównanie struktury $s(\mathbf{x}, \mathbf{y})$ jest przeprowadzane na tych znormalizowanych sygnałach $(\mathbf{x}-\mu_x)/\sigma_x$ oraz  $(\mathbf{y}-\mu_y)/\sigma_y$.
+
+Na koniec te trzy składniki są łączone, aby uzyskać ogólny wskaźnik podobieństwa
+$$S(\mathbf{x},\mathbf{y})=f(l(\mathbf{x}, \mathbf{y}),c(\mathbf{x}, \mathbf{y}),s(\mathbf{x}, \mathbf{y}) )$$
+Badane trzy składniki są stosunkowo niezależne, tzn. przykładowo zmiana jasności i/lub kontrastu nie wpłynie na zmianę struktury obrazów.
+
+Funkcję porównania jasności definiujemy jako:
+$$l(\mathbf{x}, \mathbf{y})= \frac{2\mu_x\mu_y+C_1}{\mu_x^2+\mu_y^2+C_1},$$
+gdzie stała $C_1$ jest dodana, aby uniknąć niestabilności w przypadku gdy $\mu_x^2+\mu_y^2$ byłoby bardzo bliskie zeru. Zwykle jest ona określona jako
+$$C_1=(K_1L)^2,$$
+gdzie $L$ jest zakresem wartości pikseli (np. 255 dla czarno-białych obrazów w zapisie 8-bitowym), a $K_1\ll1$ jest pewną małą stałą. 
+
+Funkcja porównania kontrastu przybiera podobną postać:
+$$l(\mathbf{x}, \mathbf{y})= \frac{2\sigma_x \sigma_y+C_2}{\sigma_x^2+\sigma_y^2+C_2},$$
+gdzie $C_2=(K_2L)^2$, a $K_2\ll1$.
+
+Porównanie struktury jest przeprowadzane po odjęciu jasności i podzieleniu przez kontrast. Definiujemy je następująco:
+$$s(\mathbf{x}, \mathbf{y})=\frac{\sigma_{xy}+C_3}{\sigma_x \sigma_y+C_3}$$
+gdzie $C_3$ podobnie jak $C_1$ i $C_2$ jest pewną niewielką stałą, a $\sigma_xy$ jest estymowane następująco:
+$$\sigma_{xy}=\frac{1}{N-1}\sum_{i=1}^N (x_i-\mu_x)(y_i-\mu_y)$$
+
+Łącząc $l$, $c$ i $s$ w jedną funkcję, otrzymujemy
+$$\operatorname{SSIM}(\mathbf{x}, \mathbf{y})=[l(\mathbf{x}, \mathbf{y})]^{\alpha}\cdot [c(\mathbf{x}, \mathbf{y})]^{\beta} \cdot [s(\mathbf{x}, \mathbf{y})]^{\gamma}$$
+gdzie $\alpha, \beta, \gamma$ są dodatnimi parametrami pozwalającymi na ustalenie ważności poszczególnych składników funkcji. Zazwyczaj przyjmuje się $\alpha=\beta=\gamma=1$ oraz $C_3=C_2/2$. Wtedy funkcja $\operatorname{SSIM}$ przyjmuje postać:
+$$\operatorname{SSIM}(\mathbf{x}, \mathbf{y})=\frac{(2\mu_x\mu_y+C_1)(2\sigma_{xy}+C_2)}{(\mu_x^2+\mu_y^2+C_1)(\sigma_x^2+\sigma_y^2+C_2)}$$
+
+Funkcja $\operatorname{SSIM}$ określona powyższym wzorem, została zdefiniowana w pracy \cite{wang}. W pracy tej przyjęto $K_1=0.01$ i $K_2=0.03$. Funkcja ta działa poprawnie jedynie dla obrazów w skali szarości. Dla obrazów kolorowych, należy obliczyć wskaźnik podobieństwa strukturalnego dla każdego z kanałów barwnych, a ostateczna wartość podobieństwa jest średnią z tych wskaźników. Funkcja $\operatorname{SSIM}$ przyjmuje wartości mniejsze lub równe 1, przy czym wartość 1 oznacza, że $\mathbf{x}=\mathbf{y}$.
+
+\begin{uwaga}
+	Funkcja $\operatorname{SSIM}$ sama w sobie nie jest funkcją straty - jej wynikiem jest miara podobieństwa dwóch obrazów. Jako funkcji straty można używać $1-\operatorname{SSIM}(\mathbf{x}, \mathbf{y})$.
+\end{uwaga}
 
 
 \subsubsection{Autoenkoder rekurencyjny}
 
 Autoenkodery rekurencyjne zwykle służą do przetwarzania danych sekwencyjnych, takich jak szeregi czasowe czy tekst. W przypadku takiego autoenkodera, koderem zwykle jest sieć sekwencyjno-wektorowa która kompresuje sekwencję wejściową do pojedynczego wektora. Dekoderem jest sieć wektorowo-sekwencyjna odwracająca tą operację \cite{geron}.
 
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{rys/recurrent_autoencoder.png}
+	\caption{Przykład autoenkodera rekurencyjnego}
+	\zrodlo{\cite{susik}}
+	\label{fig:rae}
+\end{figure}
+
+Przykład autoenkodera rekurencyjnego jest przedstawiony na rysunku \ref{fig:rae}. Zgodnie z oznaczeniami przyjętymi na tym rysunku, autoenkoder rekurencyjny generuje sekwencję wyjściową $Y=(y^{(0)}, y^{(1)}, \ldots, y^{(n_Y-1)})$ dla danej sekwencji wejściowej $X=(x^{(0)}, x^{(1)}, \ldots, x^{(n_X-1)})$, gdzie $n_X$ i $n_Y$ są rozmiarami sekwencji wejściowej i wyjściowej (mogą być takie same lub różne). Zazwyczaj $X=Y$, aby wymusić na autoenkoderze nauczenie się semantycznego znaczenia danych. Na początku sekwencja wejściowa jest kodowana przez koder będący rekurencyjną siecią neuronową, a następnie reprezentacja ukryta $C$ o danym rozmiarze jest dekodowana przez dekoder (zazwyczaj również będący rekurencyjną siecią neuronową) \cite{susik}.
+
+\newpage
 
 \subsubsection{Autoenkoder wariancyjny}
 
-Autoenkodery wariancyjne istotnie różnią się od opisywanych wcześniej rodzajów autoenkoderów. Są one autoenkoderami probabilistycznymi, czyli generują częściowo losowe wyniki. Stanowią one klasę modeli generatywnych, co oznacza, że są w stanie tworzyć nowe dane przypominające te ze zbioru uczącego. 
+Autoenkodery wariancyjne istotnie różnią się od opisywanych wcześniej rodzajów autoenkoderów. Są one autoenkoderami probabilistycznymi, czyli generują częściowo losowe wyniki. Stanowią klasę modeli generatywnych, co oznacza, że są w stanie tworzyć nowe dane przypominające te ze zbioru uczącego. 
 
 
 
@@ -1025,7 +1129,7 @@ W zadaniach klasyfikacji lub regresji autoenkodery mogą być wykorzystywane do 
 
 Autoenkodery trenują sieć w celu wyjaśnienia naturalnej struktury danych w efektywnej reprezentacji niskowymiarowej. Osiąga się to poprzez zastosowanie strategii dekodowania i kodowania w celu zminimalizowania błędu rekonstrukcji \cite{kumar}.
 
-\newpage
+
 
 \begin{figure}[!h]
 	\centering
@@ -1083,11 +1187,13 @@ Autokodery mogą być używane jako ekstraktory cech w zadaniach klasyfikacji lu
 	\label{fig:feature-extractor}
 \end{figure}
 
+\newpage
+
 \subsubsection{Odszumianie obrazów}
 
 Surowe dane wejściowe ze świata rzeczywistego są często zaszumione, a wytrenowanie dobrego modelu nadzorowanego wymaga danych oczyszczonych i pozbawionych szumu. Do odszumiania danych można wykorzystać autoenkodery. Jednym z popularnych zastosowań jest odszumianie obrazów, w którym autoenkodery próbują zrekonstruować obraz pozbawiony szumu z zaszumionego obrazu wejściowego \cite{kumar}.
 
-\newpage
+
 
 \begin{figure}[!h]
 	\centering
@@ -1115,7 +1221,7 @@ Zazwyczaj autoenkodery nie nadają się zbyt dobrze do kompresji danych, lepiej 
 
 \subsubsection{Wyszukiwanie obrazu}
 
-Do kompresji bazy danych obrazów można użyć autokoderów. Skompresowana reprezentacja może być przy przeszukiwaniu porównywana z zakodowaną wersją szukanego obrazu \cite{kumar}.
+Do kompresji bazy danych obrazów można użyć autokoderów. Skompresowana reprezentacja może być przy przeszukiwaniu porównywana z zakodowaną wersją szukanego obrazu \cite{kumar}. W przypadku, gdy chcemy znaleźć jeden konkretny obraz w bazie danych, możemy porównywać jego kodowanie z kodowaniami pozostałych obrazów (będzie to rozwiązanie szybsze niż porównywanie całych obrazów). Takie zastosowanie jest przedstawione na rysunku \ref{fig:image-search}. Jeżeli chcemy znaleźć $k$ obrazów podobnych do zadanego obrazu, możemy dla ukrytych kodowań zbudować model służący do wyodrębniania podobnych elementów, jak na przykład model $k$ najbliższych sąsiadów \cite{wong}.
 
 \begin{figure}[!h]
 	\centering
@@ -1125,17 +1231,27 @@ Do kompresji bazy danych obrazów można użyć autokoderów. Skompresowana repr
 	\label{fig:image-search}
 \end{figure}
 
+\newpage
+
 \subsubsection{Wykrywanie anomalii}
 
 Innym użytecznym zastosowaniem sieci autoenkoderów jest wykrywanie anomalii. Model wykrywania anomalii można wykorzystać do wykrywania oszukańczych transakcji lub wszelkich zadań nadzorowanych o wysokim stopniu nierównowagi.
 
- Idea polega na trenowaniu autoenkoderów tylko na próbkach danych jednej klasy (klasy większościowej). W ten sposób sieć jest w stanie zrekonstruować dane wejściowe z dobrą lub mniejszą stratą rekonstrukcji. Jeśli przez sieć autoenkodera przepuści się próbkę danych innej klasy docelowej, spowoduje to porównywalnie większą stratę rekonstrukcji. Można określić wartość progową straty rekonstrukcji (wynik anomalii), której przekroczenie będzie uznawane za anomalię \cite{kumar}.
+ Idea polega na trenowaniu autoenkoderów tylko na próbkach danych jednej klasy (klasy większościowej). W ten sposób sieć jest w stanie zrekonstruować dane wejściowe z dobrą lub mniejszą stratą rekonstrukcji. Jeśli przez sieć autoenkodera przepuści się próbkę danych innej klasy docelowej, spowoduje to porównywalnie większą stratę rekonstrukcji. Można określić wartość progową straty rekonstrukcji, której przekroczenie będzie uznawane za anomalię \cite{kumar}. Wartość progowa jest zwykle określana na podstawie wartości funkcji straty dla zbioru uczącego. Przykładowo, na rysunku \ref{fig:anomaly_loss} widać wartości funkcji straty dla pewnego zbioru, z podziałem na obserwacje normalne (kolor niebieski) i anomalie (kolor pomarańczowy). Można zauważyć, że wartości funkcji straty są generalnie większe dla anomalii niż dla obserwacji normalnych. Jako wartość progowa dla anomalii w tym przykładzie została wybrana suma średniej i dwukrotności odchylenia standardowego z wartości funkcji straty dla zbioru uczącego \cite{agrawal}.
+ 
+ \begin{figure}[!h]
+ 	\centering
+ 	\includegraphics[width=0.7\linewidth]{rys/anomaly_loss.png}
+ 	\caption{Wybór wartości progowej dla anomalii w autoenkoderze na podstawie funkcji straty}
+ 	\zrodlo{\cite{agrawal}}
+ 	\label{fig:anomaly_loss}
+ \end{figure}
+
+\newpage
 
 \subsubsection{Uzupełnianie brakujących danych}
 
-Do imputacji brakujących wartości w zbiorze danych można wykorzystać autoenkodery odszumiające. Idea polega na trenowaniu sieci autoenkoderów poprzez losowe umieszczanie brakujących wartości w danych wejściowych i próbę odtworzenia oryginalnych danych surowych poprzez minimalizację straty rekonstrukcji.
-
-Po wytrenowaniu wag autoenkodera rekordy zawierające brakujące wartości mogą być przepuszczane przez sieć autoenkodera w celu zrekonstruowania danych wejściowych, także z imputowanymi brakującymi cechami \cite{kumar}.
+Do imputacji brakujących wartości w zbiorze danych można wykorzystać autoenkodery odszumiające. Idea polega na trenowaniu sieci autoenkoderów poprzez losowe umieszczanie brakujących wartości w danych wejściowych i próbę odtworzenia oryginalnych danych surowych poprzez minimalizację straty rekonstrukcji. Po wytrenowaniu wag autoenkodera rekordy zawierające brakujące wartości mogą być przepuszczane przez sieć autoenkodera w celu zrekonstruowania danych wejściowych, także z imputowanymi brakującymi cechami \cite{kumar}. W imputacji braków danych można wykorzystać także autoenkodery wariancyjne, które potrafią generować dane podobne do tych ze zbioru uczącego \cite{mccoy}.
 
 
 \chapter{Część praktyczna}
@@ -1523,15 +1639,20 @@ tu będzie jakieś podsumowanie a może nawet jakieś wnioski
 
 \begin{thebibliography}{99}
 
-\bibitem{aggarwal} Aggarwal, C. C. (2018).\emph{ Neural Networks and Deep Learning}, Springer International Publishing
+
+
+\bibitem{agrawal} Agrawal R., (2022), \emph{Complete Guide to Anomaly Detection with AutoEncoders using Tensorflow} \url{https://www.analyticsvidhya.com/blog/2022/01/complete-guide-to-anomaly-detection-with-autoencoders-using-tensorflow/} (dostęp: 15.05.2022)
+
+\bibitem{upsampling} Artificial Intelligence in Plain English, \emph{Convolutional Autoencoders (CAE) with Tensorflow} \url{https://ai.plainenglish.io/convolutional-autoencoders-cae-with-tensorflow-97e8d8859cbe} (dostęp: 15.05.2022)
 
 \bibitem{bank} Bank D., Koenigstein N., Giryes R. (2021), \emph{Autoencoders}, arXiv:2003.05991v2
 
-\bibitem{chollet} Chollet F., Allaire J. J. (2019) \emph{Deep Learning. Praca z językiem R i biblioteką Keras}, Helion SA
 
-\bibitem{edureka} Edureka, Autoencoders Tutorial. Autoencoders in Deep Learning. Tensorflow Training \url{https://www.youtube.com/watch?v=nTt_ajul8NY} 
+
 
 \bibitem{ertel} Ertel W. (2017) \emph{Introduction to Artificial Intelligence. Second Edition}, Springer International Publishing
+
+\bibitem{geeks} Geeks For Geeks, \emph{Contractive Autoencoder (CAE)} \url{https://www.geeksforgeeks.org/contractive-autoencoder-cae/} (dostęp: 15.05.202)
 
 \bibitem{geron} G\'eron A. (2020) \emph{Uczenie maszynowe z użyciem Scikit-Learn i TensorFlow. Wydanie II}, Helion SA
 
@@ -1545,17 +1666,36 @@ tu będzie jakieś podsumowanie a może nawet jakieś wnioski
 
 \bibitem{kumar} Kumar S., (2021) \emph{7 Applications of Auto-Encoders every Data Scientist  should know. Essential guide to Auto-Encoders and its usage}, Towards Data Science, \url{https://towardsdatascience.com/6-applications-of-auto-encoders-every-data-scientist-should-know-dc703cbc892b} (dostęp: 01.04.2022)
 
+\bibitem{mccoy} John T. McCoy J. T. , Kroon S.,  Auret L.,
+
+\emph{Variational Autoencoders for Missing Data Imputation with Application to a Simulated Milling Circuit},
+
+IFAC-PapersOnLine,
+ Volume 51, Issue 21,
+ 2018,
+ Pages 141-146,
+ ISSN 2405-8963, \url{https://doi.org/10.1016/j.ifacol.2018.09.406}
+
 \bibitem{mungoli} Mungoli A., (2020) \emph{Dmiensionality Reduction: PCA versus Autoencoders. Comparison of PCA and AutoEncoders for Dimensionality Reduction}, Towards Data Science, \url{https://towardsdatascience.com/dimensionality-reduction-pca-versus-autoencoders-338fcaf3297d} (dostęp: 24.04.2022)
 
-\bibitem{osinga} Osinga D. (2019) \emph{Deep Learning. Receptury}, Helion SA
+\bibitem{mishra} Mishra D., \emph{Transposed Convolution Demystified}, \url{https://towardsdatascience.com/transposed-convolution-demystified-84ca81b4baba} (dostęp: 15.05.2022)
+
+
 
 \bibitem{pinaya} Pinaya W. H. L., Vieira S., Garcia-Dias R., Mechelli A., \emph{Machine Learning. Methods and Applications to Brain Disorders}, Academic Press,
 2020
 
+\bibitem{programmathically} Programmathically, \emph{An Introduction to Neural Network Loss Functions}, \url{https://programmathically.com/an-introduction-to-neural-network-loss-functions/} (dostęp: 15.05.2022)
+
+\bibitem{prove} Pröve P. L., \emph{An Introduction to different Types of Convolutions in Deep Learning}, \url{https://towardsdatascience.com/types-of-convolutions-in-deep-learning-717013397f4d} (dostęp: 15.05.2022)
+
 \bibitem{skansi} Skansi S. (2018) \emph{Introduction to Deep Learning. From Logical Calculus to Artificial Intelligence}, Springer International Publishing
 
+\bibitem{susik} Susik, R. (2020). \emph{Recurrent autoencoder with sequence-aware encoding} ArXiv. https://doi.org/10.48550/ARXIV.2009.07349 
 
+\bibitem{wang} Wang Z., Bovik A. C., Sheikh H. R., Simoncelli E. P., \emph{Image Quality Assesment: From Error Visibility to Structural Similarity}, IEEE Transactions on Image Processing, Vol. 13, No. 4, April 2004
 
+\bibitem{wong} Wong A., \emph{Similar Image Retrieval using Autoencoders}, \url{https://towardsdatascience.com/find-similar-images-using-autoencoders-315f374029ea} (dostęp: 15.05.2022)
 
 \end{thebibliography}
 

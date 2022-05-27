@@ -407,7 +407,11 @@ nr albumu: 89892
 
 Jeszcze niedawno komputery nie były w stanie wykonywać wielu zadań, które dla człowieka wydają się trywialne, jak na przykład rozpoznanie obiektu znajdującego się na zdjęciu. W ostatnich latach następuje jednak coraz większy rozwój w dziedzinie sztucznych sieci neuronowych, inspirowanych do pewnego stopnia biologicznym mózgiem człowieka. Zainteresowanie sztucznymi sieciami neuronowymi jest potęgowane przez dostępność ogromnej ilości danych uczących oraz znaczny wzrost mocy obliczeniowej urządzeń dostępnych dla użytkowników. Algorytmy uczące sieci neuronowe są stale udoskonalane, a pewne teoretyczne ograniczenia sztucznych sieci okazały się w praktyce nieistotne.
 
-Proste sieci neuronowe nie zawsze są wystarczające, szczególnie do zadań związanych z widzeniem komputerowym. Badania nad korą wzrokową w latach 60-tych doprowadziły do powstania wiele lat później koncepcji splotowej sieci neuronowej.
+Proste sieci neuronowe nie zawsze są wystarczające, szczególnie do zadań związanych z widzeniem komputerowym. Badania nad korą wzrokową w latach 60-tych doprowadziły do powstania wiele lat później koncepcji splotowej sieci neuronowej. Splotowe sieci neuronowe nie ograniczają się wyłącznie do postrzegania obrazów. Mają zastosowanie również w rozpoznawaniu mowy czy przetwarzaniu języka naturalnego. W tej pracy skupimy się głównie na zastosowaniach w przetwarzaniu obrazu.
+
+Kluczowym rodzajem sieci neuronowych przedstawionym w tej pracy są autoenkodery.  Stanowią one formę uczenia nienadzorowanego. Są szkolone po to, aby kopiować swoje dane wejściowe na wyjściu, przy zachowaniu pewnych ograniczeń, tak aby w procesie uczenia poznać istotne informacje o rozkładzie danych. Autoenkodery uczą się tzw. reprezentacji ukrytych, które zazwyczaj mają znacznie mniejszą wymiarowość niż dane wejściowe. Dzięki temu mogą służyć do redukowania wymiarowości, zwłaszcza w zadaniach wizualizacji. Mogą pełnić również funkcje wykrywaczy cech i służyć do wstępnego nienadzorowanego uczenia głębokich sieci neuronowych. Potrafią również generować nowe dane przypominające te ze zbioru uczącego.
+
+W niniejszej pracy przedstawione zostaną pojęcia związane z sieciami neuronowymi, szczególnie splotowymi, oraz definicja autoenkodera, jego rodzaje i zastosowania. Następnie zostaną pokazane przykłady tych zastosowań.
 
 \chapter{Podstawy teoretyczne}
 
@@ -522,6 +526,7 @@ W dalszej części pracy przy niektórych rozdzajach autoenkoderów opiszemy spe
 
 \section{Sieci splotowe}
 
+Autoenkodery, będące głównym tematem tej pracy, bardzo często składają się ze splotowych sieci neuronowych. W tym podrozdziale zostanie przybliżone pojęcie sieci splotowej oraz opisane zostaną jej elementy.
 
 \subsection{Czym jest sieć splotowa}
 
@@ -546,7 +551,7 @@ Wiele neuronów stanowiących korę wzrokową tworzy \textbf{lokalne pola recepc
 
 \subsubsection{Warstwy splotowe}
 
-Przejdziemy teraz do opisu najistotniejszej części sieci CNN, jaką jest warstwa splotowa (\emph{convolutional layer}). Na rysunku \ref{fig:warstwy-cnn} widoczny jest przykład warstw splotowych z prostokątnymi polami recepcyjnymi. W pierwszej warstwie splotowej, neurony nie są połączone z każdym pikselem obrazu wejściowego (w przeciwieństwie do opisanych wcześniej warstw gęstych), lecz jedynie z pikselami znajdującymi się w polu recepcyjnym danego neuronu. W kolejnej warstwie każdy neuron łączy się wyłącznie z neuronami z niewielkiego obszaru pierwszej warstwy. Dzięki temu sieć koncentruje się na pewnych cechach w pierwszej warstwie, a w drugiej warstwie może je łączyć w bardziej złożone kształty. Taka hierarchiczna struktura w naturalny sposób występuje na zdjęciach, co przyczyniło się do dużej skuteczności sieci splotowych w rozpoznawaniu obrazu.
+Najistotniejszą częścą sieci CNN jest \textbf{warstwa splotowa} (\emph{convolutional layer}). Na rysunku \ref{fig:warstwy-cnn} widoczny jest przykład warstw splotowych z prostokątnymi polami recepcyjnymi. W pierwszej warstwie splotowej neurony nie są połączone z każdym pikselem obrazu wejściowego (w przeciwieństwie do opisanych wcześniej warstw gęstych), lecz jedynie z pikselami znajdującymi się w polu recepcyjnym danego neuronu. W kolejnej warstwie każdy neuron łączy się wyłącznie z neuronami z niewielkiego obszaru pierwszej warstwy. Dzięki temu sieć koncentruje się na pewnych cechach w pierwszej warstwie, a w drugiej warstwie może je łączyć w bardziej złożone kształty. Taka hierarchiczna struktura w naturalny sposób występuje na zdjęciach, co przyczyniło się do dużej skuteczności sieci splotowych w rozpoznawaniu obrazu.
 
 \begin{figure}[!h]
 	\centering
@@ -587,25 +592,24 @@ recepcyjnymi nosi nazwę \textbf{kroku} (ang. stride). Na widocznym schemacie wa
 \end{figure}
 
 \begin{uwaga}[Długość kroku]
-	Długość kroku (stride length) - oznacza odległość, o jaką jądro przesuwa się po obrazie. Często stosowaną wielkością jest długość jednego piksela. Często wybieraną długością są również dwa piksele, rzadziej trzy. Dłuższe kroki nie są stosowane, ponieważ jądro może wtedy pomijać obszary obrazu potencjalnie wartościowe dla modelu. Z drugiej strony, im dłuższy krok, tym większa szybkość uczenia się modelu, ponieważ jest mniej obliczeń do wykonania. Trzeba znajdować kompromis między tymi efektami \cite{illustrated}.
+	Długość kroku (stride length) - oznacza odległość, o jaką jądro przesuwa się po obrazie. Często stosowaną wielkością jest długość jednego piksela, również dwa piksele, a rzadziej trzy. Dłuższe kroki nie są stosowane, ponieważ jądro może wtedy pomijać obszary obrazu potencjalnie wartościowe dla modelu. Z drugiej strony, im dłuższy krok, tym większa szybkość uczenia się modelu, ponieważ jest mniej obliczeń do wykonania. Trzeba znajdować kompromis między tymi efektami \cite{illustrated}.
 \end{uwaga}
 
 \subsubsection{Filtry}
 
 Wagi neuronu mogą być przedstawiane jako niewielki obraz o rozmiarze pola recepcyjnego. Na
-przykład na rysunku \ref{fig:filtry} widzimy dwa możliwe zbiory wag, tak zwane \textbf{filtry} (lub \textbf{jądra splotowe}; ang. \emph{convolution kernels}). Pierwszy filtr jest symbolizowany jako czarny kwadrat z białą pionową
-linią przechodzącą przez jego środek (jest to macierz o wymiarach 7×7 wypełniona zerami oprócz
+przykład na rysunku \ref{fig:filtry} widoczne są dwa możliwe zbiory wag, tak zwane \textbf{filtry} (lub \textbf{jądra splotowe}; ang. \emph{convolution kernels}). Pierwszy filtr jest symbolizowany jako czarny kwadrat z białą pionową linią przechodzącą przez jego środek (jest to macierz o wymiarach 7×7 wypełniona zerami oprócz
 środkowej kolumny, która zawiera jedynki); neurony zawierające te wagi będą ignorować wszystkie
 elementy w polu recepcyjnym oprócz znajdujących się w środkowej pionowej linii (dane wejściowe
-znajdujące się poza tą linią będą przemnażane przez 0). Drugi filtr wygląda podobnie; różnica
+znajdujące się poza tą linią będą przemnażane przez 0). Drugi filtr wygląda podobnie. Różnica
 polega na tym, że środkowa linia jest ułożona poziomo. Także w tym wypadku będą brane pod uwagę
 jedynie dane wejściowe znajdujące się w tej linii.
 
 Jeśli wszystkie neurony w danej warstwie będą korzystać z tego samego filtra „pionowego” (i takiego
-samego członu obciążenia), a my wczytamy do sieci obraz zaprezentowany na dole rysunku \ref{fig:filtry},
-to uzyskamy obraz widoczny w lewym górnym rogu rysunku. Zauważ, że po zastosowaniu tego filtru
+samego członu obciążenia), a do sieci wczytamy obraz zaprezentowany na dole rysunku \ref{fig:filtry},
+to uzyskamy obraz widoczny w lewym górnym rogu rysunku. Można zauważyć, że po zastosowaniu tego filtru
 pionowe białe linie stają się wyraźniej widoczne, natomiast pozostała część obrazu zostaje rozmazana.
-Na zasadzie analogii otrzymujemy obraz widoczny w prawym górnym rogu rysunku po zastosowaniu filtru „poziomego”; teraz z kolei białe poziome linie zostają wyostrzone, a reszta obrazu ulega zamazaniu. Zatem warstwa wypełniona neuronami wykorzystującymi ten sam filtr daje nam \textbf{mapę cech} (ang. \emph{feature map}), dzięki której możemy dostrzec elementy najbardziej przypominające dany filtr. Sieć CNN w czasie uczenia wyszukuje filtry najbardziej przydatne do danego zadania i uczy się łączyć je w bardziej złożone wzorce.
+W analogiczny sposób otrzymujemy obraz widoczny w prawym górnym rogu rysunku po zastosowaniu filtru „poziomego”; w tym przypadku białe poziome linie zostają wyostrzone, a reszta obrazu ulega zamazaniu. Zatem warstwa wypełniona neuronami wykorzystującymi ten sam filtr daje nam \textbf{mapę cech} (ang. \emph{feature map}), dzięki której możemy dostrzec elementy najbardziej przypominające dany filtr. Sieć CNN w czasie uczenia wyszukuje filtry najbardziej przydatne do danego zadania i uczy się łączyć je w bardziej złożone wzorce \cite{geron}.
 
 \begin{figure}[!h]
 	\centering
@@ -621,9 +625,7 @@ Na zasadzie analogii otrzymujemy obraz widoczny w prawym górnym rogu rysunku po
 
 \subsubsection{Stosy map cech}
 
-Do tej pory dla uproszczenia przedstawialiśmy każdą warstwę splotową w postaci cienkiej, dwuwymiarowej warstwy, ale w rzeczywistości składa się ona z kilku map cech o identycznych rozmiarach, dlatego trójwymiarowe odwzorowanie jest bliższe rzeczywistości (rysunek \ref{fig:warstwy-kanaly}). W zakresie jednej mapy cech każdy neuron jest przydzielony do jednego piksela, a wszystkie tworzące ją neurony współdzielą te same parametry (wagi i człon obciążenia). Neurony w innych mapach cech mają odmienne wartości parametrów. Pole recepcyjne neuronu nie ulega zmianie, ale „przebiega” przez
-wszystkie mapy cech poprzednich warstw. Krótko mówiąc, warstwa splotowa równocześnie stosuje
-różne filtry na wejściach, dzięki czemu jest w stanie wykrywać wiele cech w dowolnym obszarze obrazu.
+Warstwa splotowa była do tej pory dla uproszczenia przedstawiana w postaci dwuwymiarowej warstwy, ale w rzeczywistości składa się ona z kilku map cech o identycznych rozmiarach, dlatego trójwymiarowe odwzorowanie jest bliższe rzeczywistości (rysunek \ref{fig:warstwy-kanaly}). W zakresie jednej mapy cech każdy neuron jest przydzielony do jednego piksela, a wszystkie tworzące ją neurony współdzielą te same parametry (wagi i człon obciążenia). Neurony w innych mapach cech mają odmienne wartości parametrów. Pole recepcyjne neuronu nie ulega zmianie, ale ,,przebiega'' przez wszystkie mapy cech poprzednich warstw. %Krótko mówiąc, warstwa splotowa równocześnie stosuje różne filtry na wejściach, dzięki czemu jest w stanie wykrywać wiele cech w dowolnym obszarze obrazu.
 
 \begin{figure}[!h]
 	\centering
@@ -670,16 +672,15 @@ W tym równaniu:
 
 \subsubsection{Warstwa łącząca}
 
-Przejdźmy teraz do drugiego elementu budulcowego sieci CNN — \textbf{warstwy łączącej}, zwanej czasem redukującą (ang. pooling layer). Warstwa konwolucyjna może zawierać dowolną liczbę jąder, z których każde generuje mapę aktywacji. Zatem wyjście warstwy konwolucyjnej jest trójwymiarowa tablica aktywacji, której głębokość jest równa liczbie filtrów. Warstwa redukująca zmniejsza przestrzenny wymiar mapy aktywacji, pozostawiając jej głębokość bez zmian \cite{illustrated}. Jej celem jest podpróbkowanie
+Oprócz warstw splotowych, ważnym elementem budulcowym sieci CNN jest \textbf{warstwa łącząca}, zwana także redukującą (ang. pooling layer). Warstwa konwolucyjna może zawierać dowolną liczbę jąder, z których każde generuje mapę aktywacji. Zatem wyjściem warstwy konwolucyjnej jest trójwymiarowa tablica aktywacji, której głębokość jest równa liczbie filtrów. Warstwa redukująca zmniejsza przestrzenny wymiar mapy aktywacji, pozostawiając jej głębokość bez zmian \cite{illustrated}. Jej celem jest podpróbkowanie
 (ang. subsample; tj. zmniejszenie) obrazu wejściowego w celu zredukowania obciążenia obliczeniowego,
 wykorzystania pamięci i liczby parametrów (a tym samym ograniczenia ryzyka przetrenowania).
 Podobnie jak w przypadku warstw splotowych, każdy neuron stanowiący część warstwy łączącej
 łączy się z wyjściami określonej liczby neuronów warstwy poprzedniej, mieszczącej się w obszarze
-niewielkiego, prostokątnego pola recepcyjnego. Podobnie jak wcześniej, musimy definiować tu
+niewielkiego, prostokątnego pola recepcyjnego. Podobnie jak wcześniej, musimy definiować 
 rozmiar tego pola, wartość kroku, rodzaj uzupełniania zerami itd. Jednakże warstwa łącząca nie zawiera
-żadnych wag; jej jedynym zadaniem jest gromadzenie danych wejściowych za pomocą jakiejś funkcji agregacyjnej, np. maksymalizującej lub uśredniającej. Na rysunku \ref{fig:max-pooling-layer} widzimy najpopularniejszy
-rodzaj — \textbf{maksymalizującą warstwę łączącą} (ang. max pooling layer). W tym przykładzie korzystamy
-z \textbf{jądra łączącego}  (ang. pooling kernel) o rozmiarze 2×2, kroku o wartości 2 i z pominięciem uzupełniania zerami. Jedynie maksymalna wartość z każdego jądra zostaje przekazana do następnej warstwy natomiast pozostałe wartości wejściowe zostają odrzucone. Na przykład w lewym dolnym polu recepcyjnym na rysunku \ref{fig:max-pooling-layer} widzimy wartości wejściowe 1, 5, 3, 2, zatem tylko wartość maksymalna, czyli 5, zostanie przekazana do następnej warstwy. Z powodu kroku równego 2 obraz wyjściowy ma szerokość i wysokość o połowę mniejsze w porównaniu do obrazu wejściowego (zaokrąglamy tu w dół, ponieważ nie korzystamy z uzupełniania zerami).
+żadnych wag; jej jedynym zadaniem jest gromadzenie danych wejściowych za pomocą jakiejś funkcji agregacyjnej, np. maksymalizującej lub uśredniającej. Na rysunku \ref{fig:max-pooling-layer} przedstawiony jest najpopularniejszy
+rodzaj warstwy łączącej — \textbf{maksymalizująca warstwa łącząca} (ang. max pooling layer). W tym przykładzie korzystamy z \textbf{jądra łączącego}  (ang. pooling kernel) o rozmiarze 2×2, kroku o wartości 2 i z pominięciem uzupełniania zerami. Jedynie maksymalna wartość z każdego jądra zostaje przekazana do następnej warstwy, natomiast pozostałe wartości wejściowe zostają odrzucone. Na przykład w lewym dolnym polu recepcyjnym na rysunku \ref{fig:max-pooling-layer} widzimy wartości wejściowe 1, 5, 3, 2, zatem tylko wartość maksymalna, czyli 5, zostanie przekazana do następnej warstwy. Z powodu kroku równego 2 obraz wyjściowy ma szerokość i wysokość o połowę mniejsze w porównaniu do obrazu wejściowego (zaokrąglamy  w dół, ponieważ nie korzystamy z uzupełniania zerami).
 
 \begin{figure}[!h]
 	\centering
@@ -695,19 +696,21 @@ z \textbf{jądra łączącego}  (ang. pooling kernel) o rozmiarze 2×2, kroku o 
 
 
 
-Na rysunku \ref{fig:max-polling} widoczne jest działanie maksymalizującej warstwy redukującej na mapie aktywacji o wymiarze 4x4. Filtr przesuwa się nad danymi wejściowymi od lewej do prawej, od góry do dołu, tak jak w warstwie konwolucyjnej, i w każdej zajmowanej pozycji przeprowadza operację redukcji danych. W tym przykładzie filtr i krok mają rozmiar 2x2. Skutkuje to otrzymaniem mapy cztery razy mniejszej niż oryginalna.
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=0.7\linewidth]{rys/max-polling.png}
-	\caption{Warstwa \emph{max-pooling} z filtrem i krokiem rozmiaru 2x2, zastosowana do mapy aktywacji o rozmiarze 4x4 (widoczna po lewej stronie) skutkuje uzyskaniem mapy czterokrotnie mniejszej niż oryginalna}
+	\includegraphics[width=0.6\linewidth]{rys/max-polling.png}
+	\caption{Warstwa \emph{max-pooling} z filtrem i krokiem rozmiaru 2x2, zastosowana do mapy aktywacji o rozmiarze 4x4 (widoczna po lewej stronie)} %skutkuje uzyskaniem mapy czterokrotnie mniejszej niż oryginalna}
 	\zrodlo{\cite{illustrated}}
 	\label{fig:max-polling}
 \end{figure}
 
-Oprócz ograniczania liczby obliczeń, zużycia pamięci i liczby parametrów maksymalizująca warstwa łącząca wprowadza także pewien stopień \textbf{niezmienniczości} w stosunku do drobnych przesunięć, co widać na rysunku \ref{fig:niezmienniczosc-pooling}. Zakładamy tu, że piksele jasne mają mniejszą wartość od pikseli
-ciemnych, trzy obrazy (A, B i C) przechodzą przez maksymalizującą warstwę łączącą o jądrze 2×2
-i kroku równym 2. Obrazy B i C wyglądają tak samo jak obraz A, ale są przesunięte o, odpowiednio, jeden i dwa piksele w prawo. Jak widać, rezultaty wygenerowane w maksymalizującej warstwie łączącej z obrazów A i B są identyczne. Na tym polega \textbf{niezmienniczość przesunięć} (ang. translation invariance). W przypadku obrazu C wynik jest odmienny: jest on przesunięty o jeden piksel w prawo (nadal jednak pozostaje niezmieniony w mniej więcej 75\%). Poprzez wstawianie maksymalizującej warstwy łączącej co kilka warstw sieci CNN możliwe jest uzyskanie ograniczonej niezmienniczości przesunięć w większej skali. Ponadto warstwa ta zapewnia niewielki stopień niezmienniczości rotacyjnej i drobną niezmienniczość skalowania. Tego typu niezmienniczość (mimo że jest ograniczona) przydaje się wszędzie tam, gdzie prognozy nie powinny być zależne od tych szczegółów, na przykład w zadaniach klasyfikacji.
+Na rysunku \ref{fig:max-polling} widoczne jest działanie maksymalizującej warstwy redukującej na mapie aktywacji o wymiarze 4x4. Filtr przesuwa się nad danymi wejściowymi od lewej do prawej, od góry do dołu, tak jak w warstwie konwolucyjnej, i w każdej zajmowanej pozycji przeprowadza operację redukcji danych. W tym przykładzie filtr i krok mają rozmiar 2x2. Skutkuje to otrzymaniem mapy cztery razy mniejszej niż oryginalna.
+
+
+Oprócz ograniczania liczby obliczeń, zużycia pamięci i liczby parametrów maksymalizująca warstwa łącząca wprowadza także pewien stopień \textbf{niezmienniczości} w stosunku do drobnych przesunięć, co widać na rysunku \ref{fig:niezmienniczosc-pooling}. Zakładamy w tym przykładzie, że piksele jasne mają mniejszą wartość od pikseli
+ciemnych. Trzy obrazy (A, B i C) przechodzą przez maksymalizującą warstwę łączącą o jądrze 2×2
+i kroku równym 2. Obrazy B i C wyglądają tak samo jak obraz A, ale są przesunięte o odpowiednio jeden i dwa piksele w prawo. Jak widać, rezultaty wygenerowane w maksymalizującej warstwie łączącej z obrazów A i B są identyczne. Na tym polega \textbf{niezmienniczość przesunięć} (ang. translation invariance). W przypadku obrazu C wynik jest odmienny: jest on przesunięty o jeden piksel w prawo (nadal jednak pozostaje niezmieniony w mniej więcej 75\%). Poprzez wstawianie maksymalizującej warstwy łączącej co kilka warstw sieci CNN możliwe jest uzyskanie ograniczonej niezmienniczości przesunięć w większej skali. Ponadto warstwa ta zapewnia niewielki stopień niezmienniczości rotacyjnej i drobną niezmienniczość skalowania. Tego typu niezmienniczość (mimo że jest ograniczona) jest przydatna w zagadnieniach, w których prognozy nie powinny być zależne od tych zmian, na przykład w zadaniach klasyfikacji.
 
 \begin{figure}[!h]
 	\centering
@@ -719,15 +722,14 @@ i kroku równym 2. Obrazy B i C wyglądają tak samo jak obraz A, ale są przesu
 
 
 
-Jednak maksymalizująca warstwa łącząca jest niepozbawiona również wad. Przede wszystkim jest
-ona bardzo niszczycielska: nawet w przypadku niewielkiego jądra o rozmiarze 2×2 i kroku o wartości 2
+Maksymalizująca warstwa łącząca ma również pewne wady. Przede wszystkim jest
+ona bardzo destrukcyjna: nawet w przypadku niewielkiego jądra o rozmiarze 2×2 i kroku o wartości 2
 dane wyjściowe będą dwukrotnie mniejsze w każdym kierunku (zatem obszar obrazu będzie
 zmniejszony czterokrotnie), co oznacza porzucenie 75\% wartości wejściowych. Z kolei w pewnych
 zastosowaniach niezmienniczość jest niepożądana, na przykład w segmentacji semantycznej (zadaniu
-klasyfikowania każdego piksela obrazu zgodnie z jego przynależnością do danego obiektu): jest oczywiste, że jeżeli obraz wejściowy zostanie przesunięty o jeden piksel w prawo, to wynik również powinien być przesunięty w taki sam sposób. Wówczas celem staje się \textbf{ekwiwariancja} (ang. equivariance), a nie niezmienniczość: mała zmiana w sygnale wejściowym
-powinna prowadzić do powiązanej z nią niewielkiej zmiany w sygnale wyjściowym.
+klasyfikowania każdego piksela obrazu zgodnie z jego przynależnością do danego obiektu): jest oczywiste, że jeżeli obraz wejściowy zostanie przesunięty o jeden piksel w prawo, to wynik również powinien być przesunięty w taki sam sposób. Wówczas celem staje się \textbf{ekwiwariancja} (ang. equivariance), a nie niezmienniczość: mała zmiana w sygnale wejściowym powinna prowadzić do powiązanej z nią niewielkiej zmiany w sygnale wyjściowym.
 
-Podobnie do maksymalizującej warstwy łączącej jest zdefiniowana \textbf{uśredniająca warstwa łącząca} (average pooling layer), która zamiast maksimum używa średniej. Jest ona rzadziej wybierana w zastosowaniach niż warstwa maksymalizująca, z powodu słabszej wydajności. Obliczanie średniej zazwyczaj powoduje mniejszą utratę informacji niż obliczanie maksimum, ale za to warstwa maksymalizująca zachowuje wyłącznie najistotniejsze cechy i ignoruje te mniej ważne, dlatego kolejne warstwy otrzymują coraz czystszy sygnał. Na rysunku \ref{fig:max-avg-pooling} widoczne jest porównanie maksymalizującej i uśredniającej warstwy redukującej.
+W sposób analogiczny do maksymalizującej warstwy łączącej jest zdefiniowana \textbf{uśredniająca warstwa łącząca} (average pooling layer), która zamiast maksimum używa średniej. Jest ona rzadziej wybierana w zastosowaniach niż warstwa maksymalizująca, z powodu słabszej wydajności. Obliczanie średniej zazwyczaj powoduje mniejszą utratę informacji niż obliczanie maksimum, ale za to warstwa maksymalizująca zachowuje wyłącznie najistotniejsze cechy i ignoruje te mniej ważne, dlatego kolejne warstwy otrzymują coraz czystszy sygnał. Na rysunku \ref{fig:max-avg-pooling} widoczne jest porównanie maksymalizującej i uśredniającej warstwy redukującej.
 
 \begin{figure}[!h]
 	\centering
@@ -737,14 +739,13 @@ Podobnie do maksymalizującej warstwy łączącej jest zdefiniowana \textbf{uśr
 	\label{fig:max-avg-pooling}
 \end{figure}
 
-Ostatnim rodzajem warstwy łączącej często spotykanym we współczesnych architekturach jest
+Ostatnim rodzajem warstwy łączącej często spotykanym we współczesnych architekturach, jest
 \textbf{globalna uśredniająca warstwa łącząca} (ang. global average pooling layer). Mechanizm jej działania
 jest całkiem odmienny: oblicza ona jedynie średnią każdej mapy cech (przypomina to działanie
 uśredniającej warstwy łączącej, w której jądro ma takie same wymiary przestrzenne jak dane
 wejściowe). Oznacza to, że generuje ona na wyjściu pojedynczą wartość na każdą mapę cech
-i na każdy przykład. Jest to oczywiście rozwiązanie skrajnie destrukcyjne (większość informacji
-zawartych w mapie cech zostaje utraconych), ale, jak przekonasz się w dalszej części rozdziału,
-bywa przydatne na wyjściu modelu.
+i na każdy przykład. Jest to  rozwiązanie skrajnie destrukcyjne (większość informacji
+zawartych w mapie cech zostaje utraconych), ale bywa przydatne na wyjściu modelu \cite{geron}.
 
 
 	
@@ -752,7 +753,7 @@ bywa przydatne na wyjściu modelu.
 	
 \subsection{Czym jest autoenkoder}
 
-	\textbf{Autoenkoder} (czasem także nazywany autokoderem, z ang. \textit{autoencoder}, \textit{auto-encoder}) jest rodzajem sieci neuronowej przeznaczonym głównie do kodowania danych wejściowych do skompresowanej i znaczącej reprezentacji, a następnie dekodowania ich z powrotem w taki sposób, aby zrekonstruowane dane były jak najbardziej podobne do oryginalnych \cite{bank}. Autoenkodery uczą się gęstych reprezentacji danych, tzw. \textbf{reprezentacji ukrytych} (ang. \emph{latent representations}) lub \textbf{kodowań} (ang. \emph{codings}) bez jakiejkolwiek formy nadzorowania (tzn. zbiór danych nie zawiera etykiet). Wyjściowe kodowania zazwyczaj mają mniejszą wymiarowość od danych wejściowych, dzięki czemu autoenkodery mogą z powodzeniem służyć do \textbf{redukcji wymiarowości}. Mają też zastosowanie w \textbf{modelach generatywnych} (ang. \emph{generative models}), które potrafią losowo generować nowe dane przypominające zbiór uczący, choć warto zaznaczyć, że często lepszej jakości dane można uzyskać przy użyciu generatywnych sieci przeciwstawnych, czyli GAN (ang. \textit{Generative Adversial Networks}).  \cite{geron}. Autoenkoder jest zatem siecią neuronową szkoloną po to, aby kopiować dane wejściowe do wyjścia. Zawiera ukrytą warstwę $h$, która opisuje kodowanie używane do reprezentowania wejścia. Sieć można postrzegać jako składającą się z dwóch części: kodującej funkcji $h(x)$ i dekodera, który tworzy rekonstrukcję $r=g(h)$  \cite{goodfellow}. Ogólna struktura autoenkodera jest przedstawiona na rysunku \ref{fig:autoencoder_structue}.
+	\textbf{Autoenkoder} (nazywany także autokoderem, z ang. \textit{autoencoder}, \textit{auto-encoder}) jest rodzajem sieci neuronowej przeznaczonym głównie do kodowania danych wejściowych do skompresowanej i znaczącej reprezentacji, a następnie dekodowania ich z powrotem w taki sposób, aby zrekonstruowane dane były jak najbardziej podobne do oryginalnych \cite{bank}. Autoenkodery uczą się gęstych reprezentacji danych, tzw. \textbf{reprezentacji ukrytych} (ang. \emph{latent representations}) lub \textbf{kodowań} (ang. \emph{codings}) w formie uczenia nienadzorowanego. Kodowania często mają mniejszą wymiarowość od danych wejściowych, dzięki czemu autoenkodery mogą  służyć do redukcji wymiarowości. Mają też zastosowanie w modelach generatywnych (ang. \emph{generative models}), które potrafią losowo generować nowe dane przypominające zbiór uczący, choć warto zaznaczyć, że często lepszej jakości dane można uzyskać przy użyciu generatywnych sieci przeciwstawnych, czyli GAN (ang. \textit{Generative Adversial Networks}).  \cite{geron}. Autoenkoder jest zatem siecią neuronową szkoloną po to, aby kopiować dane wejściowe do wyjścia. Zawiera ukrytą warstwę $h$, która opisuje kodowanie używane do reprezentowania wejścia. Sieć można postrzegać jako składającą się z dwóch części: kodującej funkcji $h(x)$ i dekodera, który tworzy rekonstrukcję $r=g(h)$  \cite{goodfellow}. Ogólna struktura autoenkodera jest przedstawiona na rysunku \ref{fig:autoencoder_structue}.
 
 \begin{figure}[!h]
 	\centering
@@ -794,21 +795,22 @@ W następnych podrozdziałach zostaną przybliżone cechy charakterystyczne tych
 
 \subsubsection{Autoenkodery niedopełnione}
 
-Kopiowanie wejścia do wyjścia może wydawać się bezużyteczne, ale wyjście dekodera nas nie interesuje. Mamy za to nadzieję, że skutkiem przeszkolenia autoenkodera do kopiowania będzie kod $h$, mający przydatne właściwości.
+Kopiowanie wejścia do wyjścia może wydawać się bezużyteczne, ale wyjście dekodera niekoniecznie jest głównym celem. Często najistotniejszym skutkiem przeszkolenia autoenkodera do kopiowania będzie kodowanie ukryte $h$, mające przydatne właściwości.
 Jednym ze sposobów, aby uzyskać przydatne cechy z autoenkodera, jest ograniczenie $h$ do mniejszego wymiaru niż $x$. Autoenkoder, w którym wymiar kodu jest mniejszy niż wymiar wejściowy, jest nazywany niekompletnym (niedopełnionym).
 Poznawanie niekompletnych reprezentacji zmusza autoenkoder do przechwycenia najistotniejszych cech danych szkoleniowych.
-Proces poznawania jest opisywany po prostu jako minimalizowanie funkcji straty
+Proces poznawania jest opisywany  jako minimalizowanie funkcji straty
 $$L(x, g(f(x)))$$
 gdzie $L$ jest funkcją straty karzącą $g(f(x))$ za niepodobieństwo do $x$ jak np. błąd średniokwadratowy.
 
-Gdy dekoder jest liniowy, a $L$ to błąd średniokwadratowy, niekompletny autoenkoder uczy się obejmować tą samą podprzestrzeń co PCA. W tym przypadku poznanie zasadniczej podprzestrzeni danych szkoleniowych przez szkolony do kopiowania autoenkoder jest efektem ubocznym. Autoenkodery z nieliniowymi funkcjami kodowania $f$ i nieliniowymi funkcjami dekodowania $g$ mogą więc poznawać potężniejsze, nieliniowe uogólnienie PCA. Niestety, jeśli koder i dekoder będą mieć zbyt dużą pojemność, autoenkoder może nauczyć się wykonywać kopiowanie bez wyodrębniania pożytecznych informacji o rozkładzie danych. Teoretycznie można sobie wyobrazić, ze autoenkoder z jednowymiarowym kodem, ale bardzo potężnym nieliniowym koderem, może nauczyć się reprezentować każdy przykład szkoleniowy $x^{(i)}$ za pomocą kodu $i$. Dekoder mógłby nauczyć się odwzorowywać te całkowitoliczbowe indeksy z powrotem na wartości konkretnych przykładów szkoleniowych. Ten konkretny przykład nie występuje w praktyce, ale pokazuje wyraźnie, że autoenkoder przeszkolony do wykonywania kopiowania może zawieść, jeśli chodzi o poznanie czegoś przydatnego na temat zbioru danych, jeśli pozwoli się, aby miał za dużą pojemność \cite{goodfellow}.
+Gdy dekoder jest liniowy, a $L$ to błąd średniokwadratowy, niekompletny autoenkoder uczy się obejmować tą samą podprzestrzeń co PCA. W tym przypadku poznanie zasadniczej podprzestrzeni danych szkoleniowych przez szkolony do kopiowania autoenkoder jest efektem ubocznym. Autoenkodery z nieliniowymi funkcjami kodowania $f$ i nieliniowymi funkcjami dekodowania $g$ mogą więc poznawać potężniejsze, nieliniowe uogólnienie PCA. 
+
+Jeśli jednak koder i dekoder będą mieć zbyt dużą pojemność, autoenkoder może nauczyć się wykonywać kopiowanie bez wyodrębniania pożytecznych informacji o rozkładzie danych. Teoretycznie można sobie wyobrazić, ze autoenkoder z jednowymiarowym kodem, ale bardzo potężnym nieliniowym koderem, może nauczyć się reprezentować każdy przykład szkoleniowy $x^{(i)}$ za pomocą kodu $i$. Dekoder mógłby nauczyć się odwzorowywać te całkowitoliczbowe indeksy z powrotem na wartości konkretnych przykładów szkoleniowych. Ten konkretny przykład nie występuje w praktyce, ale pokazuje wyraźnie, że autoenkoder przeszkolony do wykonywania kopiowania może zawieść, jeśli chodzi o poznanie czegoś przydatnego na temat zbioru danych, jeśli pozwoli się, aby miał za dużą pojemność \cite{goodfellow}.
 
 \subsubsection{Autoenkodery z regularyzacją}
 
 
 
 W przypadku, gdy wymiar wyjścia jest większy (autoenkodery nadkompletne) lub równy niż wymiar wejścia, nawet liniowy koder i dekoder mogą nauczyć się kopiować wejście do wyjścia bez uczenia się niczego przydatnego na temat rozkładu danych.
-
 Ideałem byłaby możliwość udanego szkolenia dowolnej architektury autoenkodera przy wyborze wymiaru kodu oraz pojemności kodera i dekodera na podstawie złożoności rozkładu modelowanego. Można to zrobić, stosując regularyzację. Zamiast ograniczać pojemność modelu przez zachowywanie płytkości kodera i dekodera oraz małego rozmiaru kodu, autoenkodery z regularyzacją używają funkcji straty, dzięki której model może posiadać inne właściwości oprócz możliwości kopiowania swojego wejścia do wyjścia. Do tych właściwości należą:
 
 \begin{itemize}
@@ -896,7 +898,7 @@ Ogólna struktura autoenkodera odszumiającego została przedstawiona na rysunku
 \end{figure}
 
 
-\newpage
+
 
 \subsubsection{Regularyzacja poprzez karanie pochodnych}
 
@@ -1075,6 +1077,8 @@ Autoenkodery przeciwstawne wykorzystują trenowanie przeciwstawne, by ukształto
 	\label{fig:adversial-ae-structure}
 \end{figure}
 
+\newpage
+
 \noindent Gdy w strukturze znajduje się dyskryminator, enkoder jest zmuszony robić jednocześnie dwie rzeczy:
 
 \noindent (i) generować przestrzeń ukrytą, na której może pracować dekoder w celu stworzenia rekonstrukcji wejść
@@ -1219,9 +1223,11 @@ Innym zastosowaniem sieci autoenkoderów jest kompresja obrazów. Surowy obraz w
 
 Zazwyczaj autoenkodery nie nadają się zbyt dobrze do kompresji danych, lepiej sprawdzają się raczej podstawowe algorytmy kompresji.
 
+\newpage
+
 \subsubsection{Wyszukiwanie obrazu}
 
-Do kompresji bazy danych obrazów można użyć autokoderów. Skompresowana reprezentacja może być przy przeszukiwaniu porównywana z zakodowaną wersją szukanego obrazu \cite{kumar}. W przypadku, gdy chcemy znaleźć jeden konkretny obraz w bazie danych, możemy porównywać jego kodowanie z kodowaniami pozostałych obrazów (będzie to rozwiązanie szybsze niż porównywanie całych obrazów). Takie zastosowanie jest przedstawione na rysunku \ref{fig:image-search}. Jeżeli chcemy znaleźć $k$ obrazów podobnych do zadanego obrazu, możemy dla ukrytych kodowań zbudować model służący do wyodrębniania podobnych elementów, jak na przykład model $k$ najbliższych sąsiadów \cite{wong}.
+Autoenkoderów można użyć do kompresji bazy danych obrazu, aby następnie skompresowana reprezentacja mogła być przy przeszukiwaniu porównywana z zakodowaną wersją szukanego obrazu \cite{kumar}. W przypadku, gdy chcemy znaleźć jeden konkretny obraz w bazie danych, możemy porównywać jego kodowanie z kodowaniami pozostałych obrazów (będzie to rozwiązanie szybsze niż porównywanie całych obrazów). Takie zastosowanie jest przedstawione na rysunku \ref{fig:image-search}. Jeżeli chcemy znaleźć $k$ obrazów podobnych do zadanego obrazu, możemy dla ukrytych kodowań zbudować model służący do wyodrębniania podobnych elementów, jak na przykład model $k$ najbliższych sąsiadów \cite{wong}.
 
 \begin{figure}[!h]
 	\centering
@@ -1235,7 +1241,7 @@ Do kompresji bazy danych obrazów można użyć autokoderów. Skompresowana repr
 
 \subsubsection{Wykrywanie anomalii}
 
-Innym użytecznym zastosowaniem sieci autoenkoderów jest wykrywanie anomalii. Model wykrywania anomalii można wykorzystać do wykrywania oszukańczych transakcji lub wszelkich zadań nadzorowanych o wysokim stopniu nierównowagi.
+Kolejnym zastosowaniem sieci autoenkoderów jest wykrywanie anomalii. Model wykrywania anomalii można wykorzystać do wykrywania oszukańczych transakcji lub wszelkich zadań nadzorowanych o wysokim stopniu nierównowagi.
 
  Idea polega na trenowaniu autoenkoderów tylko na próbkach danych jednej klasy (klasy większościowej). W ten sposób sieć jest w stanie zrekonstruować dane wejściowe z dobrą lub mniejszą stratą rekonstrukcji. Jeśli przez sieć autoenkodera przepuści się próbkę danych innej klasy docelowej, spowoduje to porównywalnie większą stratę rekonstrukcji. Można określić wartość progową straty rekonstrukcji, której przekroczenie będzie uznawane za anomalię \cite{kumar}. Wartość progowa jest zwykle określana na podstawie wartości funkcji straty dla zbioru uczącego. Przykładowo, na rysunku \ref{fig:anomaly_loss} widać wartości funkcji straty dla pewnego zbioru, z podziałem na obserwacje normalne (kolor niebieski) i anomalie (kolor pomarańczowy). Można zauważyć, że wartości funkcji straty są generalnie większe dla anomalii niż dla obserwacji normalnych. Jako wartość progowa dla anomalii w tym przykładzie została wybrana suma średniej i dwukrotności odchylenia standardowego z wartości funkcji straty dla zbioru uczącego \cite{agrawal}.
  
@@ -1538,21 +1544,23 @@ Do wyszukiwania obrazu zostanie użyty autoenkoder prosty opisany w podrozdziale
 \end{figure}
 
 Obrazy ze zbioru testowego również są kompresowane przy użyciu kodera. Następnie dla skompresowanej formy obrazów znajdujemy $k=5$ najbliższych sąsiadów według modelu KNN. Jako wynik wyświetlane są oryginalne wersje znalezionych obrazów.
-Wynik dla opisanego zbioru testowego znajduje się na rysunku \ref{fig:retrieval-results}. Widać, że dla każdego elementu ze zbioru testowego, znalezione obrazy zawierają odpowiednią cyfrę, zgodną z wyszukiwaniem (np. dla pierwszego przykładu z liczbą 7, wszystkie znalezione obrazy również przedstawiają tą cyfrę). 
 
-\newpage
+Efekt zastosowania autoenkodera oraz modelu $k$ najbliższych sąsiadów dla opisanego zbioru testowego znajduje się na rysunku \ref{fig:retrieval-results}. Widać, że dla każdego elementu ze zbioru testowego, znalezione obrazy zawierają odpowiednią cyfrę, zgodną z wyszukiwaniem (np. dla pierwszego przykładu z liczbą 7, wszystkie znalezione obrazy również przedstawiają tą cyfrę). 
+
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=0.7\linewidth]{rys2/retrieval_results.png}
-	\caption{Wyniki zastosowania autoenkodera przy wyszukiwaniu obrazu}
+	\includegraphics[width=\linewidth]{rys2/retrieval_results_2cols.png}
+	\caption{Wyniki zastosowania prostego autoenkodera przy wyszukiwaniu obrazu}
 	\label{fig:retrieval-results}
 	\zrodlo{Opracowanie własne}
 \end{figure}
 
-\newpage
+
 
 \section{Wykrywanie anomalii przy użyciu autoenkodera}
+
+Wykrywanie anomalii przy użyciu autoenkodera zwykle polega na tym, że sieć autoenkodera jest trenowana na zbiorze ,,prawidłowych'' danych - bez anomalii. Następnie, jeśli w zbiorze testowym model trafi na anomalię, funkcja straty dla niej powinna mieć znacznie większe wartości niż dla obserwacji podobnych do tych ,,prawidłowych''. W przypadku nienadzorowanym, kiedy nie wiemy, które obserwacje są anormalne, w zbiorze uczącym mogą się znaleźć także anomalie. Na podstawie wartości funkcji straty dla obserwacji zbioru uczącego, ustalamy wartość graniczną, powyżej której przykłady testowe będą uznawane za anomalię.
 
 	\begin{figure}[!h]
 	\centering
@@ -1578,10 +1586,10 @@ Wynik dla opisanego zbioru testowego znajduje się na rysunku \ref{fig:retrieval
 	\zrodlo{Opracowanie własne}
 \end{figure}
 
-W każdej warstwie jądro ma rozmiar 3x3, a krok wynosi 2. Funkcją aktywacji w każdej warstwie jest funkcja ReLU. Zastosowano uzupełnianie zerami. Funkcją straty jest funkcja SSIM. Autoenkoder jest trenowany przez 5 epok.
+Struktura autoenkodera splotowego wykorzystanego w zadaniu wykrywania anomalii w zbiorze MNIST jest przedstawiona na rysunku \ref{fig:chart-anomaly-autoencoder}. W każdej warstwie jądro ma rozmiar 3x3, a krok wynosi 2. Funkcją aktywacji w każdej warstwie jest funkcja ReLU. Zastosowano uzupełnianie zerami. Funkcja straty bazuje na wskaźniku podobieństwa strukturalnego SSIM, a dokładniej jest to jeden minus wartość tego wskaźnika. Autoenkoder jest trenowany przez 5 epok. Graniczną wartością straty, przy której uznamy obserwację za anormalną, jest dziewięćdziesiąty dziewiąty percentyl wartości funkcji straty ze zbioru treningowego (wynosi on około 0.017821).
 
-Graniczną wartością straty, przy której uznamy obserwację za anormalną, jest dziewięćdziesiąty dziewiąty percentyl wartości funkcji straty ze zbioru treningowego (wynosi on około 0.017821).
 
+Przykłady obserwacji uznanych przez opisany model za anomalie są zaprezentowane na rysunku \ref{fig:ae-wykryte-anomalie}. Dla każdej obserwacji przedstawiono jej oryginał oraz rekonstrukcję z autoenkodera.
 
 \begin{figure}[!h]
 	\centering
@@ -1592,6 +1600,8 @@ Graniczną wartością straty, przy której uznamy obserwację za anormalną, je
 \end{figure}
 
 \section{Generowanie obrazów (autoenkoder wariancyjny)}
+
+Do generowania obrazów podobnych do obserwacji ze zbioru uczącego MNIST zostanie użyty autoenkoder o warstwach gęstych. Na wejściu model dostaje zatem obrazy ,,spłaszczone'' do wektorów o długości 784. Koder zawiera jedną warstwę ukrytą, której wymiar wyjściowy to 256, a funkcją aktywacji jest ReLU. W kolejnej warstwie zachodzi kodowanie ukryte do wymiaru 16. Na podstawie wartości $\mu$ i $\sigma$ dokonywane jest próbkowanie z rozkładu normalnego w przestrzeni ukrytej. Wynik tego próbkowania jest przekazywany do dekodera. Dekoder składa się z dwóch warstw ukrytych (gęstych). Pierwsza zwiększa wymiar do 256, jej funkcją aktywacji jest ReLU. Druga zwiększa wymiar do oryginalnego 784, a jej funkcja aktywacji to funkcja sigmoidalna. Struktura tego autoenkodera jest przedstawiona na rysunku \ref{fig:chart-var-autoencoder}. Funkcją straty jest binarna entropia krzyżowa. Funkcją straty ukrytej jest dywergencja Kullbacka-Leiblera. Liczba epok uczenia wynosi 50, a rozmiar jednego pakietu to 128.
 
 	\begin{figure}[!h]
 	\centering
@@ -1617,6 +1627,8 @@ Graniczną wartością straty, przy której uznamy obserwację za anormalną, je
 	\zrodlo{Opracowanie własne}
 \end{figure}
 
+Rysunek \ref{fig:latent-spaces} przedstawia przestrzeń ukrytą autoenkodera wariancyjnego użytego do generowania obrazów cyfr na podstawie zbioru MNIST. Przestrzeń ukryta została narysowana dla predykcji z kodera dla zbioru testowego.
+
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=\linewidth]{rys2/latent_space_MNIST.png}
@@ -1624,6 +1636,10 @@ Graniczną wartością straty, przy której uznamy obserwację za anormalną, je
 	\label{fig:vae-latent-space}
 	\zrodlo{Opracowanie własne}
 \end{figure}
+
+\newpage
+
+Na rysunku \ref{fig:vae-generated} widoczne są obrazy liczb wygenerowane przez autoenkoder wariancyjny. Generowanie każdego obrazu polega na wylosowaniu z rozkładu normalnego wektora o rozmiarze kodowania ukrytego (w naszym przykładzie jest to 16), a następnie na dokonaniu dla tego wektora predykcji z dekodera. W ten sposób otrzymujemy wektor długości 784, który następnie przekształcany jest do wymiaru 28x28 i prezentowany w formie czarno-białego obrazu.
 
 \begin{figure}[!h]
 	\centering
@@ -1726,7 +1742,7 @@ IFAC-PapersOnLine,
   \textbf{\tytul}
 \end{center}
 
-
+Ta praca przedstawia pojęcia związane z sieciami neuronowymi, w szczególności ze splotowymi, takie jak: warstwy splotowe, łączące, filtry, mapy cech. Następnie wprowadzona jest definicja autoenkodera. Szeroko opisane są rodzaje autoenkoderów, używane w nich funkcje straty oraz ich zastosowania praktyczne. W części praktycznej przedstawione są przykłady użycia różnych rodzajów autoenkoderów na zbiorze danych MNIST, takie jak autoenkoder prosty, splotowy, odszumiający, wariancyjny, a także zastosowania autoenkoderów do wykrywania anomalii oraz do wyszukiwania obrazów.
 
 \bigskip
 
@@ -1738,6 +1754,8 @@ IFAC-PapersOnLine,
 
 \selecthyphenation{english}
 {\it
+This thesis presents concepts related to neural networks, in particular to convolutional networks, such as convolutional layers, pooling layers, filters, and feature maps. Then the definition of autoencoder is introduced. Types of autoencoders, loss functions used in them and their practical applications are described extensively. In the practical section, examples of using different types of autoencoders on the MNIST dataset are presented, such as simple autoencoder, convolutional autoencoder, denoising autoencoder, variational autoencoder, as well as applications of autoencoders for anomaly detection and image retrieval.
+
 
 }
 

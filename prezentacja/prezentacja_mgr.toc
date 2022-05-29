@@ -1,0 +1,13 @@
+\babel@toc {polish}{}
+\beamer@sectionintoc {1}{Definicje}{2}{0}{1}
+\beamer@subsectionintoc {1}{1}{Sieci neuronowe}{2}{0}{1}
+\beamer@subsectionintoc {1}{2}{Sieci splotowe}{5}{0}{1}
+\beamer@subsectionintoc {1}{3}{Autoenkodery}{10}{0}{1}
+\beamer@sectionintoc {2}{Zastosowania}{14}{0}{2}
+\beamer@subsectionintoc {2}{1}{Prosty autoenkoder}{14}{0}{2}
+\beamer@subsectionintoc {2}{2}{Autoenkoder splotowy}{16}{0}{2}
+\beamer@subsectionintoc {2}{3}{Autoenkoder odszumiający}{19}{0}{2}
+\beamer@subsectionintoc {2}{4}{Wyszukiwanie obrazu}{22}{0}{2}
+\beamer@subsectionintoc {2}{5}{Wykrywanie anomalii}{24}{0}{2}
+\beamer@subsectionintoc {2}{6}{Generowanie obrazów}{28}{0}{2}
+\beamer@sectionintoc {3}{Bibliografia}{33}{0}{3}

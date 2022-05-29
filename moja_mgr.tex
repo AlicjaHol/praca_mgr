@@ -76,6 +76,7 @@
 \usepackage{longtable}
 \usepackage{array,hhline}
 \usepackage{tikz}
+\usepackage{comment}
 \usetikzlibrary{shapes.geometric, arrows}
 \tikzstyle{enc} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=blue!30]
 \tikzstyle{dec} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=orange!30]
@@ -759,7 +760,7 @@ zawartych w mapie cech zostaje utraconych), ale bywa przydatne na wyjściu model
 	\centering
 	\includegraphics[width=6cm]{rys/autoencoder_structure.png}
 	\caption{
-		Struktura autoenkoera odwzorowującego wejście $x$ na wyjście $r$ (nazywane rekonstrukcją) poprzez reprezentację ukrytą (kodowanie) $h$. Autoenkoder składa się z dwóch składników: kodera $f$ (odwzorowującego $x$ na $h$) i dekodera $g$ (odwzorowującego $h$ na $r$)}
+		Struktura autoenkodera odwzorowującego wejście $x$ na wyjście $r$ (nazywane rekonstrukcją) poprzez reprezentację ukrytą (kodowanie) $h$. Autoenkoder składa się z dwóch składników: kodera $f$ (odwzorowującego $x$ na $h$) i dekodera $g$ (odwzorowującego $h$ na $r$)}
 	\zrodlo{\cite{goodfellow}}
 	\label{fig:autoencoder_structue}
 \end{figure}
@@ -1123,7 +1124,7 @@ W zadaniach klasyfikacji lub regresji autoenkodery mogą być wykorzystywane do 
 
 \item Wykrywanie anomalii (ang. \emph{ Anomaly Detection})
 
-\item  Uzupełnianie brakujących danych (\emph{Missing Value Imputation })
+\item  Uzupełnianie brakujących danych (ang. \emph{Missing Value Imputation })
 
 \end{enumerate}
 
@@ -1342,7 +1343,7 @@ Do imputacji brakujących wartości w zbiorze danych można wykorzystać autoenk
 
 %- może wykrywanie anomalii
 
-Zbiorem, na przykładzie którego będziemy pokazywać zastosowania autoenkoderów, jest zbiór danych MNIST. Przykładowe dane z części treningowej tego zbioru są przedstawione na rysunku \ref{fig:MNIST-train}. W zbiorze uczącym znajduje się 60 tysięcy obserwacji, a w testowym 10 tysięcy.
+Zbiorem, na przykładzie którego będziemy pokazywać zastosowania autoenkoderów, jest zbiór danych MNIST \cite{mnist}. Przykładowe dane z części treningowej tego zbioru są przedstawione na rysunku \ref{fig:MNIST-train}. W zbiorze uczącym znajduje się 60 tysięcy obserwacji, a w testowym 10 tysięcy.
 
 \begin{figure}[!h]
 	\centering
@@ -1354,9 +1355,10 @@ Zbiorem, na przykładzie którego będziemy pokazywać zastosowania autoenkoder�
 
 \section{Prosty autoenkoder}
 
-Pierwszym przykładem jest tak zwany prosty autoenkoder - nazywany tak w odróżnieniu od autoenkodera splotowego. Składa się on z kodera i dekodera, z których każdy jest pojedynczą warstwą gęstą. Warstwa wyjściowa będzie przyjmować obrazy ,,spłaszczone'' do wektora o długości 784 (obrazy 2D były wymiaru $28 \times 28$). Reprezentacja ukryta ma wymiar 15, jest to więc autoenkoder niedopełniony (kodowania mają mniejszy wymiar niż dane wejściowe). Następnie dekoder przywraca wejściowy wymiar 784. Struktura użytego autoenkodera jest przedstawiona na rysunku \ref{fig:chart-simple-autoencoder}.
+Pierwszym przykładem jest tak zwany prosty autoenkoder - nazywany tak w odróżnieniu od autoenkodera splotowego. Składa się on z kodera i dekodera, z których każdy jest pojedynczą warstwą gęstą. Warstwa wyjściowa będzie przyjmować obrazy ,,spłaszczone'' do wektora o długości 784 (obrazy 2D były wymiaru $28 \times 28$). Reprezentacja ukryta ma wymiar 15, jest to więc autoenkoder niedopełniony (kodowania mają mniejszy wymiar niż dane wejściowe). Następnie dekoder przywraca wejściowy wymiar 784. Struktura użytego autoenkodera jest przedstawiona na rysunku \ref{fig:chart-simple-autoencoder}. W tabeli \ref{tab:simple-encoder} widzimy strukturę kodera, a w tabeli \ref{tab:simple-decoder} strukturę dekodera.
 \newpage
 
+\begin{comment}
 	\begin{figure}[!h]
 	\centering
 	\begin{tikzpicture}[node distance=2cm]
@@ -1372,7 +1374,43 @@ Pierwszym przykładem jest tak zwany prosty autoenkoder - nazywany tak w odróż
 	\label{fig:chart-simple-autoencoder}
 	\zrodlo{Opracowanie własne}
 \end{figure}
+\end{comment}
 
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{diagramy/ae_simple.drawio.png}
+	\caption{Struktura autoenkodera prostego}
+	\label{fig:chart-simple-autoencoder}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+	\begin{table}[!h]
+		\footnotesize
+		\centering
+			\caption{Struktura kodera w autoenkoderze prostym}
+			\label{tab:simple-encoder}			
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		Lp. & Rodzaj warstwy & Wymiar na wyjściu & Funkcja&Filtr & Krok & Uzupełnianie  \\ \hline
+		1 &  wejściowa & 784 & & & & \\ \hline
+		2 &  gęsta & 15 & ReLU & & &\\ \hline
+	\end{tabular}
+\zrodlotab{Opracowanie własne}
+\end{table}
+
+\begin{table}[!h]
+	\footnotesize
+	\centering
+		\caption{Struktura dekodera w autoenkoderze prostym}
+		\label{tab:simple-decoder}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		Lp. & Rodzaj warstwy & Wymiar na wyjściu & Funkcja&Filtr & Krok &Uzupełnianie  \\ \hline
+		1 &  wejściowa & 15 & & & &  \\ \hline
+		2 &  gęsta & 784 & sigmoidalna & & & \\ \hline
+	\end{tabular}
+\zrodlotab{Opracowanie własne}
+\end{table}
 
 Model autoenkodera jest uczony przez 15 epok. Rozmiar pakietu (\textit{batch size}) wynosi 256. Zbiorem walidacyjnym jest zbiór testowy. 
 
@@ -1394,7 +1432,7 @@ Rysunek \ref{fig:simple-encoded} przedstawia kodowanie w ukrytej przestrzeni 15-
 	\zrodlo{Opracowanie własne}
 \end{figure}
 
-\newpage
+
 
 Rysunek \ref{fig:simple-loss} przedstawia wartość funkcji straty w kolejnych epokach uczenia autoenkodera prostego. W pierwszej epoce wartość funkcji straty wynosiła około 0.3. Widać, że największy spadek wartości funkcji straty następował w pierwszych kilku iteracjach. Po około 10 epoce wartość funkcji straty utrzymywała się na podobnym poziomie (około 0.13).
 
@@ -1411,8 +1449,8 @@ Rysunek \ref{fig:simple-loss} przedstawia wartość funkcji straty w kolejnych e
 W przypadku danych ze zbioru MNIST obrazy są dość małe, więc nawet prosty autoenkdoer dał dość dobre wyniki.
 Jednak w zastosowaniu do danych wejściowych będących obrazami, zamiast autoenkodera prostego można użyć autoenkodera splotowego, który jest przeznaczony przede wszystkim do takiego typu danych. W autoenkoderze splotowym sieć kodera składa się z warstw splotowych i łączących - zazwyczaj ma ona na celu zmniejszenie wymiarowości danych (wysokości i szerokości obrazu) oraz zwiększenie głębokości (liczby map cech). Dekoder powinien przeprowadzić operację odwrotną (zwiększyć wysokość i szerokość obrazu, a zmniejszyć liczbę map cech). W tym celu można wykorzystać transponowane warstwy splotowe lub łączyć zwykłe warstwy splotowe z warstwami ekspansji \cite{geron}.
 
-Rysunek \ref{fig:chart-conv-autoencoder} przedstawia strukturę użytego autoenkodera splotowego. Koder składa się z dwóch warstw splotowych i dwóch warstw łączących. Warstwy łączące zmniejszają wymiary obrazu z 28x28 kolejno do 14x14 i 7x7. Dekoder składa się z dwóch warstw splotowych i dwóch warstw ekspansji, które zwiększają wymiary skompresowanego obrazu kolejno do 14x14 i 28x28, osiągając oryginalny wymiar. W przypadku warstw splotowych, jądro jest wymiaru 3x3. Warstwy 1 i 4 mają po 30 filtrów, a warstwy 2 i 3 po 15 filtrów. Warstwa wyjściowa również jest warstwą splotową. Ma ona jeden filtr. W warstwach łączących stosowana jest metoda redukowania \emph{MaxPooling}, gdzie jądro łączące ma rozmiar 2x2. W warstwach ekspansji współczynnik nadpróbkowania  jest równy 2 dla wierszy i tyle samo dla kolumn.
-
+Rysunek \ref{fig:chart-conv-autoencoder} przedstawia strukturę użytego autoenkodera splotowego. Koder składa się z dwóch warstw splotowych i dwóch warstw łączących. Warstwy łączące zmniejszają wymiary obrazu z 28x28 kolejno do 14x14 i 7x7. Dekoder składa się z dwóch warstw splotowych i dwóch warstw ekspansji, które zwiększają wymiary skompresowanego obrazu kolejno do 14x14 i 28x28, osiągając oryginalny wymiar. W przypadku warstw splotowych, jądro jest wymiaru 3x3. Warstwy 1 i 4 mają po 15 filtrów, a warstwy 2 i 3 po 30 filtrów. Warstwa wyjściowa również jest warstwą splotową. Ma ona jeden filtr. W warstwach łączących stosowana jest metoda redukowania \emph{MaxPooling}, gdzie jądro łączące ma rozmiar 2x2. W warstwach ekspansji współczynnik nadpróbkowania  jest równy 2 dla wierszy i tyle samo dla kolumn. Struktura tego autoenkodera wraz z użytymi funkcjami aktywacji, rozmiarami filtrów i kroków, jest przedstawiona w tabeli \ref{tab:conv-encoder} dla kodera i \ref{tab:conv-decoder} dla dekodera.
+\begin{comment}
 	\begin{figure}[!h]
 	\centering
 	\begin{tikzpicture}[node distance=2cm]
@@ -1440,6 +1478,53 @@ Rysunek \ref{fig:chart-conv-autoencoder} przedstawia strukturę użytego autoenk
 	\label{fig:chart-conv-autoencoder}
 	\zrodlo{Opracowanie własne}
 \end{figure}
+\end{comment}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{diagramy/ae_splotowy.drawio.png}
+	\caption{Struktura autoenkodera splotowego}
+	\label{fig:chart-conv-autoencoder}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+	\begin{table}[!h]
+				\footnotesize
+		\centering
+				\caption{Struktura kodera w autoenkoderze splotowym} 
+		\label{tab:conv-encoder}	
+
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		Lp. & Rodzaj warstwy & Wymiar na wyjściu & Funkcja  & Filtr & Krok & Uzupełnianie \\ \hline
+		1 &  splotowa & 28x28x15 & ReLU & 3x3 & 1x1& Tak\\ \hline
+		2 &  łącząca  & 14x14x15 &MaxPooling &2x2& & Tak\\ \hline
+		3 & splotowa & 14x14x30 & ReLU & 3x3&1x1&Tak\\ \hline
+		4 & łącząca & 7x7x30 & MaxPooling & 2x2&&Tak \\ \hline
+	\end{tabular}
+	\zrodlotab{Opracowanie własne}
+\end{table}
+
+
+
+\begin{table}[!h]
+	\footnotesize
+	\centering
+		\caption{Struktura dekodera w autoenkoderze splotowym}
+		\label{tab:conv-decoder}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		Lp. & Rodzaj warstwy & Wymiar na wyjściu & Funkcja  & Filtr & Krok & Uzupełnianie \\ \hline
+		1 &  splotowa & 7x7x30 & ReLU & 3x3 & 1x1 & Tak\\ \hline
+		2 &  ekspansji  & 14x14x30 &UpSampling &2x2& &\\ \hline
+		3 & splotowa & 14x14x15 & ReLU & 3x3&1x1 &Tak\\ \hline
+		4 & ekspansji & 28x28x15 & UpSampling & 2x2&  &\\ \hline
+		5 & splotowa & 28x28x1 & sigmoidalna & 3x3 & 1x1 &Tak\\ \hline
+	\end{tabular}
+\zrodlotab{Opracowanie własne}
+\end{table}
+
+\newpage
 
 Autoenkoder splotowy jest trenowany przez 15 epok. Rozmiar pakietu (\emph{batch size}) wynosi 128. Zbiorem walidacyjnym jest zbiór testowy.
 
@@ -1477,10 +1562,11 @@ Pokażemy teraz zastosowanie autoenkodera splotowego do odszumiania zanieczyszcz
 	\zrodlo{Opracowanie własne}
 \end{figure}
 
-Rysunek \ref{fig:MNIST-noisy} przedstawia obrazy ze zbioru testowego MNIST po zaszumieniu. Zaszumienie polegało na dodaniu do wartości każdego piksela losowej liczby z rozkładu $\mathcal{N}(0,1)$, pomnożonej przez 0.7 (parametr 0.7 został przyjęty arbitralnie i można go zmieniać w celu dalszych eksperymentów).
+Rysunek \ref{fig:MNIST-noisy} przedstawia obrazy ze zbioru testowego MNIST po zaszumieniu. Zaszumienie polegało na dodaniu do wartości każdego piksela losowej liczby z rozkładu $\mathcal{N}(0,1)$, pomnożonej przez 0.7 Parametr 0.7 został przyjęty arbitralnie i można go zmieniać w celu dalszych eksperymentów, jednakże przy większej jego wartości rekonstrukcje były już znacznie mniej czytelne przy użytym autoenkoderze.
 
-Struktura autoenkodera odszumiającego jest w tym przypadku analogiczna jak autoenkodera splotowego (rysunek \ref{fig:chart-conv-autoencoder}). Poszczególne warstwy różnią się jedynie liczbą filtrów, co jest pokazane na schemacie \ref{fig:chart-denoising-autoencoder}
+Struktura autoenkodera odszumiającego jest taka sama jak autoenkodera splotowego (rysunek \ref{fig:chart-conv-autoencoder} oraz tabele \ref{tab:conv-encoder} i \ref{tab:conv-decoder}). Różnica polega jedynie na tym, że w tym przykładzie danymi wejściowymi są zaszumione obrazy, co zostało pokazane na rysunku \ref{fig:chart-denoising-autoencoder}. 
 
+\begin{comment}
 	\begin{figure}[!h]
 	\centering
 	\begin{tikzpicture}[node distance=2cm]
@@ -1508,10 +1594,20 @@ Struktura autoenkodera odszumiającego jest w tym przypadku analogiczna jak auto
 	\label{fig:chart-denoising-autoencoder}
 	\zrodlo{Opracowanie własne}
 \end{figure}
+\end{comment}
 
-Rysunek \ref{fig:denoising-reconstructions} przedstawia efekt działania autoenkodera odszumiającego. W górnym rzędzie widać oryginalne, niezaszumione obrazy ze zbioru testowego. Środkowy rząd przedstawia zanieczyszczone obrazy, które stanowią dane wejściowe dla autoenkodera. W dolnym rzędzie widać obrazy bez szumu, zrekonstruowane przez autoenkoder.
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{diagramy/ae_denoising.drawio.png}
+	\caption{Struktura autoenkodera odszumiającego}
+	\label{fig:chart-denoising-autoencoder}
+	\zrodlo{Opracowanie własne}
+\end{figure}
 
-\newpage
+
+Rysunek \ref{fig:denoising-reconstructions} przedstawia efekt działania autoenkodera odszumiającego. W górnym rzędzie widać oryginalne, niezaszumione obrazy ze zbioru testowego. Środkowy rząd przedstawia zanieczyszczone obrazy, które stanowią dane wejściowe dla autoenkodera. W dolnym rzędzie widać obrazy bez szumu, zrekonstruowane przez autoenkoder. Widać, że w większości autoenkoder dobrze radzi sobie z usuwaniem zanieczyszczeń - jedynie na piątym obrazie widać w jego rekonstrukcji wyraźną pozostałość po szumie.
+
+
 
 \begin{figure}[!h]
 	\centering
@@ -1521,7 +1617,9 @@ Rysunek \ref{fig:denoising-reconstructions} przedstawia efekt działania autoenk
 	\zrodlo{Opracowanie własne}
 \end{figure}
 
-Na rysunku \ref{fig:denoising-loss} przedstawiona jest wartość funkcji straty w kolejnych epokach uczenia autoenkodera odszumiającego.
+Na rysunku \ref{fig:denoising-loss} przedstawiona jest wartość funkcji straty w kolejnych epokach uczenia autoenkodera odszumiającego. Można zauważyć, że wartości funkcji straty są znacznie większe niż w poprzednim przykładzie, gdzie danymi wejściowymi były oryginalne obrazy.
+
+\newpage
 
 \begin{figure}[!h]
 	\centering
@@ -1543,7 +1641,15 @@ Do wyszukiwania obrazu zostanie użyty autoenkoder prosty opisany w podrozdziale
 	\zrodlo{Opracowanie własne}
 \end{figure}
 
-Obrazy ze zbioru testowego również są kompresowane przy użyciu kodera. Następnie dla skompresowanej formy obrazów znajdujemy $k=5$ najbliższych sąsiadów według modelu KNN. Jako wynik wyświetlane są oryginalne wersje znalezionych obrazów.
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{diagramy/image_retrieval.drawio.png}
+	\caption{Schemat wyszukiwania podobnych obrazów za pomocą autoenkodera}
+	\label{fig:chart-image-retrieval}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+Obrazy ze zbioru testowego również są kompresowane przy użyciu kodera. Następnie dla skompresowanej formy obrazów znajdujemy $k=5$ najbliższych sąsiadów według modelu KNN. Jako wynik wyświetlane są oryginalne wersje znalezionych obrazów. Schemat tego zadania jest przedstawiony na rysunku \ref{fig:chart-image-retrieval}.
 
 Efekt zastosowania autoenkodera oraz modelu $k$ najbliższych sąsiadów dla opisanego zbioru testowego znajduje się na rysunku \ref{fig:retrieval-results}. Widać, że dla każdego elementu ze zbioru testowego, znalezione obrazy zawierają odpowiednią cyfrę, zgodną z wyszukiwaniem (np. dla pierwszego przykładu z liczbą 7, wszystkie znalezione obrazy również przedstawiają tą cyfrę). 
 
@@ -1562,6 +1668,7 @@ Efekt zastosowania autoenkodera oraz modelu $k$ najbliższych sąsiadów dla opi
 
 Wykrywanie anomalii przy użyciu autoenkodera zwykle polega na tym, że sieć autoenkodera jest trenowana na zbiorze ,,prawidłowych'' danych - bez anomalii. Następnie, jeśli w zbiorze testowym model trafi na anomalię, funkcja straty dla niej powinna mieć znacznie większe wartości niż dla obserwacji podobnych do tych ,,prawidłowych''. W przypadku nienadzorowanym, kiedy nie wiemy, które obserwacje są anormalne, w zbiorze uczącym mogą się znaleźć także anomalie. Na podstawie wartości funkcji straty dla obserwacji zbioru uczącego, ustalamy wartość graniczną, powyżej której przykłady testowe będą uznawane za anomalię.
 
+\begin{comment}
 	\begin{figure}[!h]
 	\centering
 	\begin{tikzpicture}[node distance=2cm]
@@ -1585,11 +1692,75 @@ Wykrywanie anomalii przy użyciu autoenkodera zwykle polega na tym, że sieć au
 	\label{fig:chart-anomaly-autoencoder}
 	\zrodlo{Opracowanie własne}
 \end{figure}
+\end{comment}
 
-Struktura autoenkodera splotowego wykorzystanego w zadaniu wykrywania anomalii w zbiorze MNIST jest przedstawiona na rysunku \ref{fig:chart-anomaly-autoencoder}. W każdej warstwie jądro ma rozmiar 3x3, a krok wynosi 2. Funkcją aktywacji w każdej warstwie jest funkcja ReLU. Zastosowano uzupełnianie zerami. Funkcja straty bazuje na wskaźniku podobieństwa strukturalnego SSIM, a dokładniej jest to jeden minus wartość tego wskaźnika. Autoenkoder jest trenowany przez 5 epok. Graniczną wartością straty, przy której uznamy obserwację za anormalną, jest dziewięćdziesiąty dziewiąty percentyl wartości funkcji straty ze zbioru treningowego (wynosi on około 0.017821).
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{diagramy/ae_anomalie.drawio.png}
+	\caption{Struktura autoenkodera splotowego użytego do wykrywania anomalii}
+	\label{fig:chart-anomaly-autoencoder}
+	\zrodlo{Opracowanie własne}
+\end{figure}
 
+Struktura autoenkodera splotowego wykorzystanego w zadaniu wykrywania anomalii w zbiorze MNIST jest przedstawiona na rysunku \ref{fig:chart-anomaly-autoencoder}. W każdej warstwie jądro ma rozmiar 3x3, a krok wynosi 2. Funkcją aktywacji w każdej warstwie jest funkcja ReLU. Zastosowano uzupełnianie zerami. Struktura kodera jest przedstawiona w tabeli \ref{tab:anomaly-encoder}, a dekodera w tabeli \ref{tab:anomaly-decoder}.  Schemat zadania wykrywania anomalii za pomocą autoenkodera jest przedstawiony na rysunku \ref{fig:chart-anomaly-detection}.
+
+
+	\begin{table}[!h]
+		\footnotesize
+		\centering
+			\caption{Struktura kodera w autoenkoderze splotowym użytym do wykrywania anomalii}
+			\label{tab:anomaly-encoder}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		Lp. & Rodzaj warstwy & Wymiar na wyjściu & Funkcja  & Filtr & Krok & Uzupełnianie \\ \hline
+		1 &  splotowa & 14x14x32 & ReLU & 3x3 & 2x2 & Tak\\ \hline
+		2 & splotowa & 7x7x64 & ReLU & 3x3 & 2x2&Tak \\ \hline
+		3 & splotowa & 3x3x128 & ReLU & 3x3 & 2x2&Nie \\ \hline
+		
+	\end{tabular}
+\zrodlotab{Opracowanie własne}
+\end{table}
+
+\newpage
+
+\begin{table}[!h]
+	\footnotesize
+	\centering
+		\caption{Struktura dekodera w autoenkoderze splotowym użytym do wykrywania anomalii}
+		\label{tab:anomaly-decoder}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		Lp. & Rodzaj warstwy & Wymiar na wyjściu & Funkcja  & Filtr & Krok & Uzupełnianie \\ \hline
+		1 &  splotowa transponowana & 7x7x64 & ReLU & 3x3 & 2x2 & Nie \\ \hline
+		2 & splotowa transponowana & 14x14x32 & ReLU & 3x3 & 2x2&Tak \\ \hline
+		3 & splotowa transponowana & 28x28x1 & ReLU & 3x3 & 2x2&Tak \\ \hline
+		
+	\end{tabular}
+\zrodlotab{Opracowanie własne}
+\end{table}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{diagramy/anomaly_detection.drawio.png}
+	\caption{Schemat wykrywania anomalii za pomocą autoenkodera}
+	\label{fig:chart-anomaly-detection}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+ Funkcja straty bazuje na wskaźniku podobieństwa strukturalnego SSIM, a dokładniej jest to jeden minus wartość tego wskaźnika. Autoenkoder jest trenowany przez 5 epok. Na rysunku \ref{fig:anomaly-loss-threshold} widoczny jest histogram wartości funkcji straty dla obserwacji ze zbioru uczącego. Graniczną wartością straty, przy której uznamy obserwację za anormalną, jest dziewięćdziesiąty dziewiąty percentyl wartości funkcji straty ze zbioru treningowego (wynosi on około 0.017821). Wartość ta na wykresie jest zaznaczona za pomocą pionowej czerwonej linii.
+\newpage
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{rys2/anomaly_loss_threshold.png}
+	\caption{Wartośći funkcji straty z autoenkodera do wykrywania anomalii, z zaznaczoną wartością progową, powyżej której obserwacja jest uznawana za anomalię}
+	\label{fig:anomaly-loss-threshold}
+	\zrodlo{Opracowanie własne}
+\end{figure}
 
 Przykłady obserwacji uznanych przez opisany model za anomalie są zaprezentowane na rysunku \ref{fig:ae-wykryte-anomalie}. Dla każdej obserwacji przedstawiono jej oryginał oraz rekonstrukcję z autoenkodera.
+
+
 
 \begin{figure}[!h]
 	\centering
@@ -1599,10 +1770,11 @@ Przykłady obserwacji uznanych przez opisany model za anomalie są zaprezentowan
 	\zrodlo{Opracowanie własne}
 \end{figure}
 
-\section{Generowanie obrazów (autoenkoder wariancyjny)}
+\section{Generowanie obrazów przy użyciu autoenkodera wariancyjnego}
 
-Do generowania obrazów podobnych do obserwacji ze zbioru uczącego MNIST zostanie użyty autoenkoder o warstwach gęstych. Na wejściu model dostaje zatem obrazy ,,spłaszczone'' do wektorów o długości 784. Koder zawiera jedną warstwę ukrytą, której wymiar wyjściowy to 256, a funkcją aktywacji jest ReLU. W kolejnej warstwie zachodzi kodowanie ukryte do wymiaru 16. Na podstawie wartości $\mu$ i $\sigma$ dokonywane jest próbkowanie z rozkładu normalnego w przestrzeni ukrytej. Wynik tego próbkowania jest przekazywany do dekodera. Dekoder składa się z dwóch warstw ukrytych (gęstych). Pierwsza zwiększa wymiar do 256, jej funkcją aktywacji jest ReLU. Druga zwiększa wymiar do oryginalnego 784, a jej funkcja aktywacji to funkcja sigmoidalna. Struktura tego autoenkodera jest przedstawiona na rysunku \ref{fig:chart-var-autoencoder}. Funkcją straty jest binarna entropia krzyżowa. Funkcją straty ukrytej jest dywergencja Kullbacka-Leiblera. Liczba epok uczenia wynosi 50, a rozmiar jednego pakietu to 128.
+Do generowania obrazów podobnych do obserwacji ze zbioru uczącego MNIST zostanie użyty autoenkoder o warstwach gęstych. Na wejściu model dostaje zatem obrazy ,,spłaszczone'' do wektorów o długości 784. Koder zawiera jedną warstwę ukrytą, której wymiar wyjściowy to 256, a funkcją aktywacji jest ReLU. W kolejnej warstwie zachodzi kodowanie ukryte do wymiaru 16. Na podstawie wartości $\mu$ i $\sigma$ dokonywane jest próbkowanie z rozkładu normalnego w przestrzeni ukrytej. Wynik tego próbkowania jest przekazywany do dekodera. Dekoder składa się z dwóch warstw ukrytych (gęstych). Pierwsza zwiększa wymiar do 256, jej funkcją aktywacji jest ReLU. Druga zwiększa wymiar do oryginalnego 784, a jej funkcja aktywacji to funkcja sigmoidalna. Struktura tego autoenkodera jest przedstawiona na rysunku \ref{fig:chart-var-autoencoder}. Struktura kodera jest widoczna w tabeli \ref{tab:var-encoder}, a dekodera w tabeli \ref{tab:var-decoder}. Funkcją straty jest binarna entropia krzyżowa. Funkcją straty ukrytej jest dywergencja Kullbacka-Leiblera. Liczba epok uczenia wynosi 50, a rozmiar jednego pakietu to 128.
 
+\begin{comment}
 	\begin{figure}[!h]
 	\centering
 	\begin{tikzpicture}[node distance=2cm]
@@ -1626,26 +1798,95 @@ Do generowania obrazów podobnych do obserwacji ze zbioru uczącego MNIST zostan
 	\label{fig:chart-var-autoencoder}
 	\zrodlo{Opracowanie własne}
 \end{figure}
+\end{comment}
 
-Rysunek \ref{fig:latent-spaces} przedstawia przestrzeń ukrytą autoenkodera wariancyjnego użytego do generowania obrazów cyfr na podstawie zbioru MNIST. Przestrzeń ukryta została narysowana dla predykcji z kodera dla zbioru testowego.
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{diagramy/ae_wariancyjny.drawio.png}
+	\caption{Struktura autoenkodera wariancyjnego}
+	\label{fig:chart-var-autoencoder}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+	\begin{table}[!h]
+		
+		\footnotesize
+		\centering
+		
+			\caption{Struktura kodera w autoenkoderze wariancyjnym}
+			\label{tab:var-encoder}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		Lp. & Rodzaj warstwy & Wymiar na wyjściu & Funkcja  & Filtr & Krok&Uzupełnianie \\ \hline
+		1 &  wejściowa & 784 &  &  & & \\ \hline
+		2 & gęsta & 256 & ReLU &  &  &\\ \hline
+		3 & gęsta ($\mu$) & 16 &  &  & & \\ \hline
+		4 & gęsta ($\sigma$) & 16 & & & &\\ \hline
+		5 & gęsta ($z$) & 16 & $z=\mu+\sigma \cdot \varepsilon$ & && \\ \hline
+		
+	\end{tabular}
+\zrodlotab{Opracowanie własne}
+\end{table}
+
+\begin{table}[!h]
+	\footnotesize
+	\centering
+	\caption{Struktura dekodera w autoenkoderze wariancyjnym}
+	\label{tab:var-decoder}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline
+		Lp. & Rodzaj warstwy & Wymiar na wyjściu & Funkcja  & Filtr & Krok& Uzupełnianie\\ \hline
+		1 &  wejściowa & 16 & ReLU & 3x3 & 2x2& \\ \hline
+		2 & gęsta & 256 & ReLU &  & & \\ \hline
+		3 & gęsta & 784 &  &  &  &\\ \hline
+		
+	\end{tabular}
+	\zrodlotab{Opracowanie własne}
+\end{table}
+
+\newpage
+
+Rysunek \ref{fig:latent-spaces} przedstawia pierwsze dwa wymiary przestrzeni ukrytej autoenkodera wariancyjnego użytego do generowania obrazów cyfr na podstawie zbioru MNIST. W dwóch wymiarach nie widać, aby różne kategorie obrazów były wyraźnie od siebie oddzielone.
+
+
 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=\linewidth]{rys2/latent_space_MNIST.png}
-	\caption{Przestrzeń ukryta autoenkodera wariancyjnego}
+	\caption{Dwa pierwsze wymiary przestrzeni ukrytej autoenkodera wariancyjnego}
 	\label{fig:vae-latent-space}
 	\zrodlo{Opracowanie własne}
 \end{figure}
 
-\newpage
+
 
 Na rysunku \ref{fig:vae-generated} widoczne są obrazy liczb wygenerowane przez autoenkoder wariancyjny. Generowanie każdego obrazu polega na wylosowaniu z rozkładu normalnego wektora o rozmiarze kodowania ukrytego (w naszym przykładzie jest to 16), a następnie na dokonaniu dla tego wektora predykcji z dekodera. W ten sposób otrzymujemy wektor długości 784, który następnie przekształcany jest do wymiaru 28x28 i prezentowany w formie czarno-białego obrazu.
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=\linewidth]{rys2/vae_generated.png}
+	\includegraphics[width=0.6\linewidth]{rys2/vae_generated.png}
 	\caption{Przykłady obrazów cyfr wygenerowanych przez autoenkoder wariancyjny}
 	\label{fig:vae-generated}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+Zadanie generowania nowych obrazów zostało również przeprowadzone dla autoenkodera identycznego jak na rysunku \ref{fig:chart-var-autoencoder}, ale z przestrzenią ukrytą o wymiarze równym 2. Pozostałe parametry pozostają bez zmian. Przestrzeń ukryta takiego autoenkodera jest zaprezentowana na rysunku \ref{fig:vae-latent-space-2dims}. W przypadku niektórych kategorii widać, że są wyraźnie oddzielone od pozostałych. Można również zauważyć, że obserwacje nie są równomiernie rozłożone po całej przestrzeni ukrytej - problem ten został poruszony w części teoretycznej przy okazji autoenkoderów przeciwstawnych.
+
+Rysunek \ref{fig:vae-latent-generated-2dims} również przedstawia przestrzeń ukrytą, ale w postaci obrazów cyfr. Możemy zaobserwować, jak jeden rodzaj cyfry ,,przechodzi'' w inny rodzaj, na przykład w pierwszym rzędzie widzimy tranzycję od liczby 1 do liczby 7.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys2/latent_space_2dims.png}
+	\caption{Przestrzeń ukryta autoenkodera wariancyjnego z wymiarem kodowania ukrytego równym dwa}
+	\label{fig:vae-latent-space-2dims}
+	\zrodlo{Opracowanie własne}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{rys2/latent_generated_2dims.png}
+	\caption{Przestrzeń ukryta w postaci obrazów cyfr}
+	\label{fig:vae-latent-generated-2dims}
 	\zrodlo{Opracowanie własne}
 \end{figure}
 
@@ -1678,14 +1919,17 @@ tu będzie jakieś podsumowanie a może nawet jakieś wnioski
 
 \bibitem{hubel2} Hubel D. H., Wiesel T. N., \emph{Receptive Fields of Single Neurones in the Cat's Striate Cortex}, J. Physiol., (1959), 148, 574-591
 
+
+
+
 \bibitem{illustrated} Krohn J., Beyleveld G., Bassens A., \emph{Uczenie głębokie i sztuczna inteligencja. Interaktywny przewodnik ilustrowany}, Helion 2022
 
 \bibitem{kumar} Kumar S., (2021) \emph{7 Applications of Auto-Encoders every Data Scientist  should know. Essential guide to Auto-Encoders and its usage}, Towards Data Science, \url{https://towardsdatascience.com/6-applications-of-auto-encoders-every-data-scientist-should-know-dc703cbc892b} (dostęp: 01.04.2022)
 
-\bibitem{mccoy} John T. McCoy J. T. , Kroon S.,  Auret L.,
+\bibitem{mnist} LeCun Y., Cortes C., Burges C. J. C., \emph{THE MNIST DATABASE of handwritten digits} \url{http://yann.lecun.com/exdb/mnist/} (dostęp: 29.05.2022)
 
+\bibitem{mccoy} McCoy J. T. , Kroon S.,  Auret L.,
 \emph{Variational Autoencoders for Missing Data Imputation with Application to a Simulated Milling Circuit},
-
 IFAC-PapersOnLine,
  Volume 51, Issue 21,
  2018,

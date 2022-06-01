@@ -412,7 +412,9 @@ Proste sieci neuronowe nie zawsze są wystarczające, szczególnie do zadań zwi
 
 Kluczowym rodzajem sieci neuronowych przedstawionym w tej pracy są autoenkodery.  Stanowią one formę uczenia nienadzorowanego. Są szkolone po to, aby kopiować swoje dane wejściowe na wyjściu, przy zachowaniu pewnych ograniczeń, tak aby w procesie uczenia poznać istotne informacje o rozkładzie danych. Autoenkodery uczą się tzw. reprezentacji ukrytych, które zazwyczaj mają znacznie mniejszą wymiarowość niż dane wejściowe. Dzięki temu mogą służyć do redukowania wymiarowości, zwłaszcza w zadaniach wizualizacji. Mogą pełnić również funkcje wykrywaczy cech i służyć do wstępnego nienadzorowanego uczenia głębokich sieci neuronowych. Potrafią również generować nowe dane przypominające te ze zbioru uczącego.
 
-W niniejszej pracy przedstawione zostaną pojęcia związane z sieciami neuronowymi, szczególnie splotowymi, oraz definicja autoenkodera, jego rodzaje i zastosowania. Następnie zostaną pokazane przykłady tych zastosowań.
+W niniejszej pracy przedstawione zostaną pojęcia związane z sieciami neuronowymi, jak sztuczny neuron, warstwy gęste, funkcje aktywacji. Dokładniej przybliżone zostaną sieci splotowe: ich powiązanie z działaniem biologicznej kory wzrokowej, elementy składowe takie jak warstwy splotowe i redukujące oraz parametry warstw takie jak długość kroku czy wielkość jądra. Po wprowadzeniu pojęć związanych z sieciami splotowymi, przedstawiona zostanie definicja autoenkodera oraz jego rodzaje. Zostaną opisane autoenkodery niedopełnione, rzadkie, kurczliwe, odszumiające, stosowe, splotowe, rekurencyjne, wariancyjne i przeciwstawne. Ostatni podrozdział części teoretycznej jest poświęcony krótkiemu opisowi najważniejszych zastosowań autoenkoderów. Temat zastosowań jest następnie rozwinięty w części praktycznej tej pracy, gdzie pokazano sześć przykładów użycia autoenkoderów.
+
+
 
 \chapter{Podstawy teoretyczne}
 
@@ -1261,8 +1263,8 @@ Kolejnym zastosowaniem sieci autoenkoderów jest wykrywanie anomalii. Model wykr
 Do imputacji brakujących wartości w zbiorze danych można wykorzystać autoenkodery odszumiające. Idea polega na trenowaniu sieci autoenkoderów poprzez losowe umieszczanie brakujących wartości w danych wejściowych i próbę odtworzenia oryginalnych danych surowych poprzez minimalizację straty rekonstrukcji. Po wytrenowaniu wag autoenkodera rekordy zawierające brakujące wartości mogą być przepuszczane przez sieć autoenkodera w celu zrekonstruowania danych wejściowych, także z imputowanymi brakującymi cechami \cite{kumar}. W imputacji braków danych można wykorzystać także autoenkodery wariancyjne, które potrafią generować dane podobne do tych ze zbioru uczącego \cite{mccoy}.
 
 
-\chapter{Część praktyczna}
-%\chapter{Przykłady zastosowań autoenkoderów}
+%\chapter{Część praktyczna}
+\chapter{Przykłady zastosowań autoenkoderów}
 
 %\section{Analiza PCA za pomocą autoenkodera niedopełnionego}
 
